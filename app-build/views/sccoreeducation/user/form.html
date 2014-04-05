@@ -1,0 +1,86 @@
+<form name="newUserForm" class="form-horizontal">
+  <fieldset>
+    <legend>New {{userType}}</legend>
+
+    <div class="form-group">
+      <label for="user_id" class="col-sm-2 control-label">{{userType}} ID</label>
+      <div class="col-sm-8">
+        <input type="text"
+          ng-model="newUser.id"
+          id="user_id"
+          name="userId"
+          required="true"
+          ng-attr-placeholder="{{userType}} ID"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="user_firstname" class="col-sm-2 control-label">First name</label>
+      <div class="col-sm-8">
+        <input type="text"
+          ng-model="newUser.firstName"
+          id="user_firstname"
+          name="userFirstName"
+          required="true"
+          ng-attr-placeholder="{{userType}} first name"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="user_lastname" class="col-sm-2 control-label">Last name</label>
+      <div class="col-sm-8">
+        <input type="text"
+          ng-model="newUser.lastName"
+          id="user_lastname"
+          name="userLastName"
+          required="true"
+          ng-attr-placeholder="{{userType}} last name"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="user_email" class="col-sm-2 control-label">Email</label>
+      <div class="col-sm-8">
+        <input type="email"
+          ng-model="newUser.email"
+          id="user_email"
+          name="userEmail"
+          required="true"
+          ng-attr-placeholder="{{userType}} email"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="user_photo" class="col-sm-2 control-label">Photo url</label>
+      <div class="col-sm-8">
+        <input type="url"
+          ng-model="newUser.photo"
+          id="user_photo"
+          name="userPhoto"
+          ng-attr-placeholder="{{userType}} photo url"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-8">
+        <button type="submit"
+          id="submitButton"
+          ng-click="submitNewUser(newUser)"
+          ng-disabled="!newUserForm.$valid || disableForm"
+          class="btn btn-default"
+        >Add new {{userType}}</button>
+      </div>
+    </div>
+
+  </fieldset>
+</form>

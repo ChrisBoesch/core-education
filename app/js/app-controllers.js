@@ -6,7 +6,7 @@
   controller('scceNavBarCtrl', ['$scope', '$location', 'scceCurrentUserApi',
     function($scope, $location, scceCurrentUser) {
       $scope.activeUser = null;
-      scceCurrentUser.get('/').then(function(info) {
+      scceCurrentUser.get().then(function(info) {
         $scope.activeUser = info;
       });
 

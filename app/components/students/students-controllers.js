@@ -1,21 +1,16 @@
 (function() {
   'use strict';
 
-  angular.module('scceStudents.controllers', ['scceStudents.services']).
+  angular.module('scceStudents.controllers', ['scceStudents.services', 'scceUser.directives']).
 
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
       $scope.students = null;
-      $scope.addingStudent = false;
 
       $scope.submitNewStudent = function(newStudent) {
-        $scope.addingStudent = true;
         scceStudentsApi.add(newStudent).then(function(student) {
-          $scope.newStudent = {};
           $scope.students.push(student);
-          return student;
-        })['finally'](function() {
-          $scope.addingStudent = false;
+          return 'done';
         });
       };
 

@@ -1,21 +1,16 @@
 (function() {
   'use strict';
 
-  angular.module('scceStaff.controllers', ['scceStaff.services']).
+  angular.module('scceStaff.controllers', ['scceStaff.services', 'scceUser.directives']).
 
   controller('scceStaffListCtrl', ['$scope', 'scceStaffApi',
     function($scope, scceStaffApi) {
       $scope.staff = null;
-      $scope.addingStaff = false;
 
       $scope.submitNewStaff = function(newStaff) {
-        $scope.addingStaff = true;
-        scceStaffApi.add(newStaff).then(function(staff) {
-          $scope.newStaff = {};
+        return scceStaffApi.add(newStaff).then(function(staff) {
           $scope.staff.push(staff);
-          return staff;
-        })['finally'](function() {
-          $scope.addingStaff = false;
+          return 'done';
         });
       };
 

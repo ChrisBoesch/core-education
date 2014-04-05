@@ -14,10 +14,6 @@
   config(['$routeProvider',
     function($routeProvider) {
       $routeProvider
-        .when('/', {
-          templateUrl: 'views/sccoreeducation/home.html',
-          controller: 'scceHomeCtrl'
-        })
         .when('/students', {
           templateUrl: 'views/sccoreeducation/studentlist.html',
           controller: 'scceStudentListCtrl'
@@ -27,7 +23,7 @@
           controller: 'scceStaffListCtrl'
         })
         .otherwise({
-          redirectTo: '/'
+          redirectTo: '/students'
         });
     }
   ])
