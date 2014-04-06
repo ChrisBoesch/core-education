@@ -19,6 +19,10 @@
         isStudent: false,
         name: 'test@example.com'
       },
+      loginError: {
+        loginUrl: '/login',
+        error: 'You are not logged in.'
+      },
       students: {
         x1: {
           'firstName': 'Alice',

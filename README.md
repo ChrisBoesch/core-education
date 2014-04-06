@@ -27,6 +27,72 @@ Add the script and its dependencies to your page:
 <script src="path/to/bower_components/core-education/app-build/js/app-templates.js"></script>
 ```
 
+### User api
+
+#### scceCurrentUserApi
+
+Module: `scceUser.services`
+
+`scceCurrentUserApi.auth` returns a promise that resolves to an object
+with either a logoutUrl or loginUrl properties depending if the user
+is logged in or not.
+
+It also returns [additional info](http://development.nextucloud.appspot.com/swagger/#!/user/isloggedIn_get_0)
+if the user is logged in.
+
+```
+(function() {
+  'use strict';
+
+  angular.module('myApp', ['scceUser.services']).
+
+  controller('MyCtrl', function($scope, scceCurrentUserApi) {
+    $scope.user = scceCurrentUserApi;
+    // $scope.user.info == null (no info available)
+    scceCurrentUserApi.auth().then(function(user){
+      // log in/out infos are available.
+      // $scope.user.info === user
+      if (user.name) {
+        return queryMoreService();
+      } else {
+        alert('logging 1st please')
+      }
+    });
+  });
+
+})();
+```
+
+#### scceUserLogin
+
+Module: scceUser.directives
+
+`scceUserLogin` Directive creating a login info link for a boostrap navbar.
+
+```
+<header class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="">My App</a>
+    </div>
+    <div class="navbar-collapse collapse" id="main-nav">
+      <ul class="nav navbar-nav">
+        <li ng-class="{active: isActive('/link1')}">
+          <a ng-href="#/link1">Link 1</a>
+        </li>
+      </ul>
+      <scce-user-login></scce-user-login>
+    </div>
+  </div>
+</header>
+```
+
 
 ## Development
 

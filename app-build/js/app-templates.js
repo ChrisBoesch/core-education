@@ -1,4 +1,4 @@
-angular.module('scCoreEducation.templates', ['views/sccoreeducation/home.html', 'views/sccoreeducation/stafflist.html', 'views/sccoreeducation/studentlist.html', 'views/sccoreeducation/user/form.html', 'views/sccoreeducation/user/grid.html']);
+angular.module('scCoreEducation.templates', ['views/sccoreeducation/home.html', 'views/sccoreeducation/stafflist.html', 'views/sccoreeducation/studentlist.html', 'views/sccoreeducation/user/form.html', 'views/sccoreeducation/user/grid.html', 'views/sccoreeducation/user/login.html']);
 
 angular.module("views/sccoreeducation/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("views/sccoreeducation/home.html",
@@ -141,4 +141,22 @@ angular.module("views/sccoreeducation/user/grid.html", []).run(["$templateCache"
     "    </tr>\n" +
     "  </tbody>\n" +
     "</table>");
+}]);
+
+angular.module("views/sccoreeducation/user/login.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("views/sccoreeducation/user/login.html",
+    "<ul class=\"nav navbar-nav navbar-right\">\n" +
+    "  <li>\n" +
+    "    <p class=\"navbar-text\" ng-if=\"user.loading\">Loading current user info...</p>\n" +
+    "    <p class=\"navbar-text\" ng-if=\"user.info.name\">Signed in as {{user.info.name}}</p>\n" +
+    "  </li>\n" +
+    "  <li ng-if=\"user.info\">\n" +
+    "    <a ng-href=\"{{user.info.loginUrl}}\" ng-if=\"user.info.loginUrl\">\n" +
+    "      <i class=\"glyphicon glyphicon-off\"></i> login\n" +
+    "    </a>\n" +
+    "    <a ng-href=\"{{user.info.logoutUrl}}\" ng-if=\"user.info.logoutUrl\">\n" +
+    "      <i class=\"glyphicon glyphicon-off\"></i> logout\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "</ul>");
 }]);
