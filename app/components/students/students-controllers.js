@@ -1,7 +1,9 @@
 (function() {
   'use strict';
 
-  angular.module('scceStudents.controllers', ['scceStudents.services', 'scceUser.directives']).
+  angular.module('scceStudents.controllers', [
+    'scceStudents.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
@@ -18,7 +20,8 @@
         return scceStudentsApi.all().then(function(list) {
           $scope.students = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {

@@ -97,6 +97,7 @@ module.exports = function(grunt) {
             '!js/**/*',
             '!css/',
             '!css/**/*',
+            '!views/**/*',
           ]
         }, {
           expand: true,
@@ -159,12 +160,23 @@ module.exports = function(grunt) {
       }
     },
 
+    html2js: {
+      options: {
+        base: 'app/',
+        module: 'scCoreEducation.templates'
+      },
+      build: {
+        src: ['app/views/**/*.html'],
+        dest: 'app-build/js/app-templates.js'
+      },
+    },
+
     htmlmin: {
       dist: {
         files: [{
           expand: true,
           cwd: 'app-build',
-          src: ['*.html', 'views/**/*.html'],
+          src: ['*.html'],
           dest: 'app-dist'
         }]
       }
@@ -303,6 +315,7 @@ module.exports = function(grunt) {
     'clean:build',
     'useminPrepare',
     'concat',
+    'html2js:build',
     'copy:build',
     'targethtml:build'
   ]);

@@ -1,7 +1,9 @@
 (function() {
   'use strict';
 
-  angular.module('scceStaff.controllers', ['scceStaff.services', 'scceUser.directives']).
+  angular.module('scceStaff.controllers', [
+    'scceStaff.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStaffListCtrl', ['$scope', 'scceStaffApi',
     function($scope, scceStaffApi) {
@@ -18,7 +20,8 @@
         return scceStaffApi.all().then(function(list) {
           $scope.staff = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {

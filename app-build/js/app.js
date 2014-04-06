@@ -8,6 +8,7 @@
       'scCoreEducation.controllers',
       'scceStudents.controllers',
       'scceStaff.controllers',
+      'scCoreEducation.templates'
     ]
   ).
 
@@ -138,7 +139,7 @@
 (function() {
   'use strict';
 
-  angular.module('scceUser.directives', []).
+  angular.module('scceUser.directives', ['scCoreEducation.templates']).
 
   /**
    * Directive displaying a list of user (student or staff)
@@ -191,28 +192,30 @@
       return {
         restrict: 'E',
         templateUrl: 'views/sccoreeducation/user/form.html',
-        controller: function($scope) {
-          $scope.submitNewUser = function(newUser) {
-            if (!$scope.onSubmit) {
-              $scope.reset();
-              return;
-            }
-
-            $scope.disableForm = true;
-            $q.when($scope.onSubmit(newUser)).then(function(result) {
-              if (result) {
+        controller: ['$scope',
+          function($scope) {
+            $scope.submitNewUser = function(newUser) {
+              if (!$scope.onSubmit) {
                 $scope.reset();
+                return;
               }
-            });
-          };
 
-          $scope.reset = function() {
-            $scope.disableForm = false;
-            $scope.newUser = {};
-          };
+              $scope.disableForm = true;
+              $q.when($scope.onSubmit(newUser)).then(function(result) {
+                if (result) {
+                  $scope.reset();
+                }
+              });
+            };
 
-          $scope.reset();
-        },
+            $scope.reset = function() {
+              $scope.disableForm = false;
+              $scope.newUser = {};
+            };
+
+            $scope.reset();
+          }
+        ],
         scope: {
           userType: '@scceUserType',
           onSubmit: '=scceUserHandler'
@@ -253,7 +256,9 @@
 (function() {
   'use strict';
 
-  angular.module('scceStudents.controllers', ['scceStudents.services', 'scceUser.directives']).
+  angular.module('scceStudents.controllers', [
+    'scceStudents.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
@@ -270,7 +275,8 @@
         return scceStudentsApi.all().then(function(list) {
           $scope.students = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {
@@ -316,7 +322,9 @@
 (function() {
   'use strict';
 
-  angular.module('scceStaff.controllers', ['scceStaff.services', 'scceUser.directives']).
+  angular.module('scceStaff.controllers', [
+    'scceStaff.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStaffListCtrl', ['$scope', 'scceStaffApi',
     function($scope, scceStaffApi) {
@@ -333,7 +341,8 @@
         return scceStaffApi.all().then(function(list) {
           $scope.staff = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {

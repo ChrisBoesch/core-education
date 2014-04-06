@@ -1,6 +1,6 @@
 <!DOCTYPE html><!--(if target dev)><!-->
 <html lang="en" data-ng-app="scCoreEducationMocked"><!--<!(endif)-->
-<!--(if target build || e2e)><html lang="en" data-ng-app="scCoreEducation"><!(endif)-->
+<!--(if target build || e2e || dist)><html lang="en" data-ng-app="scCoreEducation"><!(endif)-->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -91,12 +91,15 @@
   <script src="components/staff/staff-services.js"></script>
   <script src="components/staff/staff-controllers.js"></script>
   <!-- endbuild -->
+  <script src="js/app-templates.js"></script>
   <!--(if target dev || e2e)><!-->
   <script src="lib/angular-mocks/angular-mocks.js"></script>
   <script src="js/app-fixtures.js"></script>
   <!--<!(endif)--><!--(if target dev)><!-->
   <script src="js/app-test.js"></script>
   <!--<!(endif)-->
+
+
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('scceUser.directives', []).
+  angular.module('scceUser.directives', ['scCoreEducation.templates']).
 
   /**
    * Directive displaying a list of user (student or staff)
@@ -54,28 +54,30 @@
       return {
         restrict: 'E',
         templateUrl: 'views/sccoreeducation/user/form.html',
-        controller: function($scope) {
-          $scope.submitNewUser = function(newUser) {
-            if (!$scope.onSubmit) {
-              $scope.reset();
-              return;
-            }
-
-            $scope.disableForm = true;
-            $q.when($scope.onSubmit(newUser)).then(function(result) {
-              if (result) {
+        controller: ['$scope',
+          function($scope) {
+            $scope.submitNewUser = function(newUser) {
+              if (!$scope.onSubmit) {
                 $scope.reset();
+                return;
               }
-            });
-          };
 
-          $scope.reset = function() {
-            $scope.disableForm = false;
-            $scope.newUser = {};
-          };
+              $scope.disableForm = true;
+              $q.when($scope.onSubmit(newUser)).then(function(result) {
+                if (result) {
+                  $scope.reset();
+                }
+              });
+            };
 
-          $scope.reset();
-        },
+            $scope.reset = function() {
+              $scope.disableForm = false;
+              $scope.newUser = {};
+            };
+
+            $scope.reset();
+          }
+        ],
         scope: {
           userType: '@scceUserType',
           onSubmit: '=scceUserHandler'

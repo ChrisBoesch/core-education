@@ -7,12 +7,12 @@
   }
 
 
-  angular.module(
-    'scCoreEducationMocked', ['scCoreEducation', 'ngMockE2E', 'scCoreEducationMocked.fixtures']
-  ).
+  angular.module('scCoreEducationMocked', [
+    'scCoreEducation', 'ngMockE2E', 'scCoreEducationMocked.fixtures'
+  ]).
 
 
-  run(function($httpBackend, SC_CORE_EDUCATION_FIXTURES){
+  run(function($httpBackend, SC_CORE_EDUCATION_FIXTURES) {
     var fix = SC_CORE_EDUCATION_FIXTURES,
       students = fix.data.students;
 
