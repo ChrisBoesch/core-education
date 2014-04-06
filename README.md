@@ -22,6 +22,9 @@ Add the script and its dependencies to your page:
 <script src="path/to/bower_components/angular-route/angular-route.js"></script>
 <script src="path/to/bower_components/restangular/dist/restangular.js"></script>
 <script src="path/to/bower_components/core-education/app-build/js/app.js"></script>
+
+<!-- Add template module if you need to use the directive of controller -->
+<script src="path/to/bower_components/core-education/app-build/js/app-templates.js"></script>
 ```
 
 

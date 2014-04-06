@@ -1,28 +1,40 @@
 'use strict';
 
+function middleware() {
+  return function(connect, options) {
+    var middlewares = [];
+    var directory = options.directory || options.base[options.base.length - 1];
+    if (!Array.isArray(options.base)) {
+      options.base = [options.base];
+    }
+
+    options.base.forEach(function(base) {
+      // Serve static files.
+      middlewares.push(connect.static(base));
+    });
+
+    // Make directory browse-able.
+    middlewares.push(connect.directory(directory));
+
+
+    return middlewares;
+  };
+}
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
 
-    autoshot: {
-      dev: {
-        options: {
-          path: 'screenshots/',
-          viewport: ['1024x655'],
-          local: false,
-          remote: {
-            files: [{
-              src: 'http://0.0.0.0:8888/app#/',
-              dest: 'home.jpg',
-            }]
-          }
-        }
-      }
-    },
-
     clean: {
+      build: {
+        files: [{
+          dot: true,
+          src: [
+            'app-build',
+          ]
+        }]
+      },
       dist: {
         files: [{
           dot: true,
@@ -31,14 +43,14 @@ module.exports = function(grunt) {
           ]
         }]
       },
-      build: {
+      e2e: {
         files: [{
           dot: true,
           src: [
-            'app-build',
+            'app-e2e',
           ]
         }]
-      }
+      },
     },
 
     concat: {},
@@ -51,23 +63,7 @@ module.exports = function(grunt) {
       devserver: {
         options: {
           port: 8888,
-          middleware: function(connect, options) {
-            var middlewares = [];
-            var directory = options.directory || options.base[options.base.length - 1];
-            if (!Array.isArray(options.base)) {
-              options.base = [options.base];
-            }
-
-            options.base.forEach(function(base) {
-              // Serve static files.
-              middlewares.push(connect.static(base));
-            });
-
-            // Make directory browse-able.
-            middlewares.push(connect.directory(directory));
-
-            return middlewares;
-          }
+          middleware: middleware()
         }
       },
       screenshots: {
@@ -75,6 +71,12 @@ module.exports = function(grunt) {
           port: 5556,
           base: './screenshots/',
           keepalive: true
+        }
+      },
+      e2e: {
+        options: {
+          port: 5557,
+          middleware: middleware()
         }
       }
     },
@@ -91,10 +93,11 @@ module.exports = function(grunt) {
             '!lib/',
             '!lib/**/*',
             '!js/',
-            '!js/**/*',
             '!components/**/*',
+            '!js/**/*',
             '!css/',
             '!css/**/*',
+            '!views/**/*',
           ]
         }, {
           expand: true,
@@ -102,6 +105,13 @@ module.exports = function(grunt) {
           dest: 'app-build',
           src: [
             'fonts/*'
+          ]
+        }, {
+          expand: true,
+          cwd: 'app/lib/angular-file-upload/dist',
+          dest: 'app-build/js',
+          src: [
+            'FileAPI.*'
           ]
         }]
       },
@@ -114,9 +124,28 @@ module.exports = function(grunt) {
           src: [
             '**/*',
             '!js/**/*',
+            '!components/**/*',
             '!css/**/*',
             '!*.html',
             '!views/**/*.html'
+          ]
+        }, {
+          expand: true,
+          cwd: 'app/lib/angular-file-upload/dist',
+          dest: 'app-dist/js',
+          src: [
+            'FileAPI.*'
+          ]
+        }]
+      },
+      e2e: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: 'app',
+          dest: 'app-e2e',
+          src: [
+            '**/*'
           ]
         }]
       }
@@ -131,12 +160,23 @@ module.exports = function(grunt) {
       }
     },
 
+    html2js: {
+      options: {
+        base: 'app/',
+        module: 'scCoreEducation.templates'
+      },
+      build: {
+        src: ['app/views/**/*.html'],
+        dest: 'app-build/js/app-templates.js'
+      },
+    },
+
     htmlmin: {
       dist: {
         files: [{
           expand: true,
           cwd: 'app-build',
-          src: ['*.html', 'views/**/*.html'],
+          src: ['*.html'],
           dest: 'app-dist'
         }]
       }
@@ -165,6 +205,21 @@ module.exports = function(grunt) {
       }
     },
 
+    protractor: {
+      options: {
+        configFile: 'config/e2e.conf.js',
+        keepAlive: true,
+        noColor: false,
+      },
+      dev: {
+        options: {
+          args: {
+            specs: ['app-e2e/js/appSpec.e2e.js']
+          }
+        }
+      },
+    },
+
     rev: {
       dist: {
         files: {
@@ -173,6 +228,35 @@ module.exports = function(grunt) {
             'app-dist/css/**/*.css',
             'app-dist/fonts/*'
           ]
+        }
+      }
+    },
+
+    shell: {
+      options: {
+        stdout: true,
+        stderr: true
+      },
+      'npm_install': {
+        command: 'npm install'
+      },
+      'npm_post_install': {
+        command: [
+          './node_modules/.bin/bower install',
+          './node_modules/.bin/webdriver-manager update'
+        ].join(';')
+      }
+    },
+
+    targethtml: {
+      build: {
+        files: {
+          'app-build/index.html': 'app-build/index.html'
+        }
+      },
+      e2e: {
+        files: {
+          'app-e2e/index.html': 'app-e2e/index.html'
         }
       }
     },
@@ -215,6 +299,13 @@ module.exports = function(grunt) {
         ],
         tasks: ['build']
       },
+      e2e: {
+        files: [
+          'app/**/*',
+          '!app/lib/**/*'
+        ],
+        tasks: ['protractor:build']
+      }
     },
 
   });
@@ -224,7 +315,9 @@ module.exports = function(grunt) {
     'clean:build',
     'useminPrepare',
     'concat',
+    'html2js:build',
     'copy:build',
+    'targethtml:build'
   ]);
   grunt.registerTask('build', ['build:assets', 'usemin']);
 
@@ -240,15 +333,23 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', ['jshint', 'karma:unit']);
+
   grunt.registerTask('autotest', ['jshint', 'karma:autoUnit']);
-
-  grunt.registerTask('server:dev', ['connect:devserver']);
-
-  grunt.registerTask('dev', ['build', 'server:dev', 'watch']);
+  grunt.registerTask('autotest:e2e', [
+    'build',
+    'copy:e2e',
+    'targethtml:e2e',
+    'connect:e2e',
+    'protractor:dev',
+    'watch:e2e'
+  ]);
 
   grunt.registerTask(
-    'screenshots', ['build', 'server:dev', 'autoshot', 'connect:screenshots']);
+    'server:dev', ['connect:devserver']
+  );
 
-  grunt.registerTask('default', ['test', 'build', 'server:dev', 'autoshot']);
+  grunt.registerTask('dev', ['build', 'server:dev', 'watch:app']);
+
+  grunt.registerTask('default', ['test', 'build', 'server:dev']);
 
 };

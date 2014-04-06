@@ -1,21 +1,18 @@
 (function() {
   'use strict';
 
-  angular.module('scceStudents.controllers', ['scceStudents.services']).
+  angular.module('scceStudents.controllers', [
+    'scceStudents.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
       $scope.students = null;
-      $scope.addingStudent = false;
 
       $scope.submitNewStudent = function(newStudent) {
-        $scope.addingStudent = true;
         scceStudentsApi.add(newStudent).then(function(student) {
-          $scope.newStudent = {};
           $scope.students.push(student);
-          return student;
-        })['finally'](function() {
-          $scope.addingStudent = false;
+          return 'done';
         });
       };
 
@@ -23,7 +20,8 @@
         return scceStudentsApi.all().then(function(list) {
           $scope.students = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {

@@ -8,16 +8,13 @@
       'scCoreEducation.controllers',
       'scceStudents.controllers',
       'scceStaff.controllers',
+      'scCoreEducation.templates'
     ]
   ).
 
   config(['$routeProvider',
     function($routeProvider) {
       $routeProvider
-        .when('/', {
-          templateUrl: 'views/sccoreeducation/home.html',
-          controller: 'scceHomeCtrl'
-        })
         .when('/students', {
           templateUrl: 'views/sccoreeducation/studentlist.html',
           controller: 'scceStudentListCtrl'
@@ -27,7 +24,7 @@
           controller: 'scceStaffListCtrl'
         })
         .otherwise({
-          redirectTo: '/'
+          redirectTo: '/students'
         });
     }
   ])
@@ -80,7 +77,7 @@
   controller('scceNavBarCtrl', ['$scope', '$location', 'scceCurrentUserApi',
     function($scope, $location, scceCurrentUser) {
       $scope.activeUser = null;
-      scceCurrentUser.get('/').then(function(info) {
+      scceCurrentUser.get().then(function(info) {
         $scope.activeUser = info;
       });
 
@@ -104,6 +101,18 @@
 
   angular.module('scceUser.services', ['scCoreEducation.services']).
 
+  /**
+   * scceCurrentUserApi - api to access user info.
+   *
+   * scceCurrentUserApi.get(returnUrl)  Return the user name, id and the
+   * the logout url if the user logged in. Return the login url if the
+   * user logged off.
+   *
+   * Note that it returns a promise that resole in either case. If the promise
+   * fails, there was either a problem with the optional return url, or
+   * there's an unexpected issue with the backend.
+   *
+   */
   factory('scceCurrentUserApi', ['$location', '$q', 'scceApi',
     function($location, $q, scceApi) {
       return {
@@ -125,6 +134,98 @@
       };
     }
   ]);
+
+})();
+(function() {
+  'use strict';
+
+  angular.module('scceUser.directives', ['scCoreEducation.templates']).
+
+  /**
+   * Directive displaying a list of user (student or staff)
+   *
+   * usage:
+   *
+   *  <scce-user-grid scce-users="studentList" scce-user-type="students">
+   *  </scce-user-grid>
+   *
+   * Where students `scce-users` should reference a list of students
+   * and `scce-user-type` is type of user ('students' or 'staff').
+   *
+   * Note that `scce-user-type` doesn't reference a scope attribute and
+   * we be evaulated either.
+   *
+   */
+  directive('scceUserGrid', function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'views/sccoreeducation/user/grid.html',
+      scope: {
+        users: '=scceUsers',
+        userType: '@scceUserType'
+      }
+    };
+  }).
+
+  /**
+   * Form to create a new user.
+   *
+   * usage:
+   *
+   *  <scce-user-form
+   *    scce-user-type="student"
+   *    scce-user-handler="submitNewStudent"
+   *   >
+   *  </scce-user-form>
+   *
+   * Where `scce-user-type` is either 'student' or 'staff' and
+   * scce-user-handler reference a function trigger when the form is submitted
+   * .It take a user as argument and returning a promise that should resolve
+   * a truthy value when the form is safe to reset.
+   *
+   * If the handler return a positive value instead of a promise, the form
+   * will be reset right after submission.
+   *
+   */
+  directive('scceUserForm', ['$q',
+    function($q) {
+      return {
+        restrict: 'E',
+        templateUrl: 'views/sccoreeducation/user/form.html',
+        controller: ['$scope',
+          function($scope) {
+            $scope.submitNewUser = function(newUser) {
+              if (!$scope.onSubmit) {
+                $scope.reset();
+                return;
+              }
+
+              $scope.disableForm = true;
+              $q.when($scope.onSubmit(newUser)).then(function(result) {
+                if (result) {
+                  $scope.reset();
+                }
+              });
+            };
+
+            $scope.reset = function() {
+              $scope.disableForm = false;
+              $scope.newUser = {};
+            };
+
+            $scope.reset();
+          }
+        ],
+        scope: {
+          userType: '@scceUserType',
+          onSubmit: '=scceUserHandler'
+        }
+      };
+    }
+  ])
+
+
+  ;
 
 })();
 (function() {
@@ -155,21 +256,18 @@
 (function() {
   'use strict';
 
-  angular.module('scceStudents.controllers', ['scceStudents.services']).
+  angular.module('scceStudents.controllers', [
+    'scceStudents.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
       $scope.students = null;
-      $scope.addingStudent = false;
 
       $scope.submitNewStudent = function(newStudent) {
-        $scope.addingStudent = true;
         scceStudentsApi.add(newStudent).then(function(student) {
-          $scope.newStudent = {};
           $scope.students.push(student);
-          return student;
-        })['finally'](function() {
-          $scope.addingStudent = false;
+          return 'done';
         });
       };
 
@@ -177,7 +275,8 @@
         return scceStudentsApi.all().then(function(list) {
           $scope.students = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {
@@ -223,21 +322,18 @@
 (function() {
   'use strict';
 
-  angular.module('scceStaff.controllers', ['scceStaff.services']).
+  angular.module('scceStaff.controllers', [
+    'scceStaff.services', 'scceUser.directives', 'scCoreEducation.templates'
+  ]).
 
   controller('scceStaffListCtrl', ['$scope', 'scceStaffApi',
     function($scope, scceStaffApi) {
       $scope.staff = null;
-      $scope.addingStaff = false;
 
       $scope.submitNewStaff = function(newStaff) {
-        $scope.addingStaff = true;
-        scceStaffApi.add(newStaff).then(function(staff) {
-          $scope.newStaff = {};
+        return scceStaffApi.add(newStaff).then(function(staff) {
           $scope.staff.push(staff);
-          return staff;
-        })['finally'](function() {
-          $scope.addingStaff = false;
+          return 'done';
         });
       };
 
@@ -245,7 +341,8 @@
         return scceStaffApi.all().then(function(list) {
           $scope.staff = list;
           return list;
-        }).catch(function(data) {
+        }).
+        catch (function(data) {
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {

@@ -25,7 +25,8 @@ module.exports = function(config) {
       'app/lib/angular-mocks/angular-mocks.js',
       'app/lib/bootstrap/dist/js/bootstrap.js',
       'app/js/*.js',
-      'app/components/**/*.js'
+      'app/components/**/*.js',
+      'app/views/**/*.html'
     ],
 
 
@@ -38,7 +39,11 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      '**/*.html': 'ng-html2js'
+    },
 
+    ngHtml2JsPreprocessor: {
+      stripPrefix: 'app/'
     },
 
 
