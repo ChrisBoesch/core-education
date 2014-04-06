@@ -8,6 +8,7 @@
       'scCoreEducation.controllers',
       'scceStudents.controllers',
       'scceStaff.controllers',
+      'scceUser.directives',
       'scCoreEducation.templates'
     ]
   ).

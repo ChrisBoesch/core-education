@@ -22,7 +22,7 @@
     function($location, $q, scceApi) {
       api = {
         info: null,
-        _userPromise: null,
+        loading: null,
 
         _get: function(returnUrl) {
           var params = {
@@ -47,19 +47,19 @@
             return $q.when(api.info);
           }
 
-          if (api._userPromise) {
-            return api._userPromise;
+          if (api.loading) {
+            return api.loading;
           }
 
 
-          api._userPromise = api._get(returnUrl).then(function(user) {
+          api.loading = api._get(returnUrl).then(function(user) {
             api.info = user;
             return user;
           })['finally'](function() {
-            api._userPromise = null;
+            api.loading = null;
           });
 
-          return api._userPromise;
+          return api.loading;
         },
 
         reset: function(loginUrl, msg) {

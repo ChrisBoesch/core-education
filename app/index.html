@@ -42,19 +42,7 @@
               <a ng-href="#/staff">Staff</a>
             </li>
           </ul>
-          <ul class="nav navbar-nav navbar-right" ng-if="activeUser">
-            <li>
-              <p class="navbar-text" ng-if="activeUser.name">Signed in as {{activeUser.name}}</p>
-            </li>
-            <li>
-              <a ng-href="{{activeUser.loginUrl}}" ng-if="activeUser.loginUrl">
-                <i class="glyphicon glyphicon-off"></i> login
-              </a>
-              <a ng-href="{{activeUser.logoutUrl}}" ng-if="activeUser.logoutUrl">
-                <i class="glyphicon glyphicon-off"></i> logout
-              </a>
-            </li>
-          </ul>
+          <scce-user-login></scce-user-login>
         </div>
       </div>
     </header>

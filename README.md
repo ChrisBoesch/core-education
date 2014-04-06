@@ -63,7 +63,35 @@ if the user is logged in.
 })();
 ```
 
-In the template, you
+#### scceUserLogin
+
+Module: scceUser.directives
+
+`scceUserLogin` Directive creating a login info link for a boostrap navbar.
+
+```
+<header class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="">My App</a>
+    </div>
+    <div class="navbar-collapse collapse" id="main-nav">
+      <ul class="nav navbar-nav">
+        <li ng-class="{active: isActive('/link1')}">
+          <a ng-href="#/link1">Link 1</a>
+        </li>
+      </ul>
+      <scce-user-login></scce-user-login>
+    </div>
+  </div>
+</header>
+```
 
 
 ## Development

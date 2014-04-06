@@ -1,14 +1,10 @@
 (function() {
   'use strict';
 
-  angular.module('scCoreEducation.controllers', ['scceUser.services']).
+  angular.module('scCoreEducation.controllers', []).
 
-  controller('scceNavBarCtrl', ['$scope', '$location', 'scceCurrentUserApi',
-    function($scope, $location, scceCurrentUser) {
-      $scope.activeUser = null;
-      scceCurrentUser.get().then(function(info) {
-        $scope.activeUser = info;
-      });
+  controller('scceNavBarCtrl', ['$scope', '$location',
+    function($scope, $location) {
 
       $scope.isActive = function(route) {
         return route === $location.path();
