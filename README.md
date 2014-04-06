@@ -27,6 +27,44 @@ Add the script and its dependencies to your page:
 <script src="path/to/bower_components/core-education/app-build/js/app-templates.js"></script>
 ```
 
+### User api
+
+#### scceCurrentUserApi
+
+Module: `scceUser.services`
+
+`scceCurrentUserApi.auth` returns a promise that resolves to an object
+with either a logoutUrl or loginUrl properties depending if the user
+is logged in or not.
+
+It also returns [additional info](http://development.nextucloud.appspot.com/swagger/#!/user/isloggedIn_get_0)
+if the user is logged in.
+
+```
+(function() {
+  'use strict';
+
+  angular.module('myApp', ['scceUser.services']).
+
+  controller('MyCtrl', function($scope, scceCurrentUserApi) {
+    $scope.user = scceCurrentUserApi;
+    // $scope.user.info == null (no info available)
+    scceCurrentUserApi.auth().then(function(user){
+      // log in/out infos are available.
+      // $scope.user.info === user
+      if (user.name) {
+        return queryMoreService();
+      } else {
+        alert('logging 1st please')
+      }
+    });
+  });
+
+})();
+```
+
+In the template, you
+
 
 ## Development
 
