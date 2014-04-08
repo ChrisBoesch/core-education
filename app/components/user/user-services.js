@@ -63,15 +63,14 @@
         },
 
         reset: function(loginUrl, msg) {
-          if (!loginUrl) {
-            api.info = null;
-          } else {
-            api.info = {
-              loginUrl: loginUrl,
-              error: msg
-            };
-          }
+          var currentLoginUrl = api.info && api.info.loginUrl || null;
 
+          loginUrl = loginUrl || currentLoginUrl;
+          if (loginUrl) {
+            api.info = {loginUrl: loginUrl, error: msg};
+          } else {
+            api.info = null;
+          }
         }
       };
 

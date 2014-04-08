@@ -122,7 +122,7 @@
         expect(users[0]).toBe(users[1]);
       });
 
-      it('should an user data if already fetch', function() {
+      it('should not fetch user data again if already fetch', function() {
         var callCount = 0,
           users = [];
 
@@ -152,12 +152,11 @@
         $httpBackend.whenGET(/\/api\/v1\/user/).respond(bob);
         currentUserApi.auth();
         $httpBackend.flush();
+        expect(currentUserApi.info.name).toEqual('bob');
 
         $httpBackend.whenGET('/api/v1/foo/').respond(function() {
           return [401, {}];
         });
-
-        expect(currentUserApi.info.name).toEqual('bob');
 
         $http.get('/api/v1/foo/');
         $httpBackend.flush();
@@ -165,7 +164,7 @@
         expect(currentUserApi.info).toBe(null);
       });
 
-      it('should reset user after 401 resp to relative url', function() {
+      it('should reset user after 401 resp to a url to same domain', function() {
         $httpBackend.whenGET(/\/api\/v1\/user/).respond(bob);
         currentUserApi.auth();
         $httpBackend.flush();
@@ -182,7 +181,7 @@
         expect(currentUserApi.info).toBe(null);
       });
 
-      it('should reset user after 401 resp to other domain', function() {
+      it('should not reset user after 401 resp to other domain', function() {
         $httpBackend.whenGET(/\/api\/v1\/user/).respond(bob);
         currentUserApi.auth();
         $httpBackend.flush();
@@ -197,6 +196,25 @@
         $httpBackend.flush();
 
         expect(currentUserApi.info.name).toEqual('bob');
+      });
+
+      it('should keep user.loginUrl after 401 resp', function() {
+        $httpBackend.whenGET(/\/api\/v1\/user/).respond(function(){
+          return [401, {loginUrl: '/login'}];
+        });
+        currentUserApi.auth();
+        $httpBackend.flush();
+
+        expect(currentUserApi.info.loginUrl).toEqual('/login');
+
+        $httpBackend.whenGET('/api/v1/foo/').respond(function() {
+          return [401, {}];
+        });
+
+        $http.get('/api/v1/foo/');
+        $httpBackend.flush();
+
+        expect(currentUserApi.info.loginUrl).toEqual('/login');
       });
 
     });
