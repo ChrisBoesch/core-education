@@ -2,7 +2,7 @@
   'use strict';
   var api;
 
-  angular.module('scceUser.services', ['scCoreEducation.services']).
+  angular.module('scceUser.services', ['scCoreEducation.services', 'scceUser.config']).
 
   /**
    * scceCurrentUserApi - api to access user info.
@@ -18,15 +18,19 @@
    * TODO: handle lose of authentication.
    *
    */
-  factory('scceCurrentUserApi', ['$location', '$q', 'scceApi',
-    function($location, $q, scceApi) {
+  factory('scceCurrentUserApi', ['$location', '$q', 'scceApi', 'scceUserConfig',
+    function($location, $q, scceApi, scceUserConfig) {
       api = {
         info: null,
         loading: null,
 
         _get: function(returnUrl) {
           var params = {
-            returnUrl: returnUrl || $location.absUrl()
+            returnUrl: (
+              returnUrl ||
+              scceUserConfig.defaultReturnUrl ||
+              $location.absUrl()
+            )
           };
 
           return scceApi.one('user').get(params).then(function(data) {
