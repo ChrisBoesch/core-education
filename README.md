@@ -99,7 +99,7 @@ Module: `scceUser.directives`
 
 Module: `scceUser.directives`
 
-`scceSvgContainer` set the a `svg element `viewBox` attribute and keep it
+`scceSvgContainer` set the a SVG element `viewBox` attribute and keep it
 responsive.
 
 ```
