@@ -97,7 +97,7 @@ Module: `scceUser.directives`
 
 #### scceSvgContainer
 
-Module: `scceUser.directives`
+Module: `scceSvg.directives`
 
 `scceSvgContainer` set the a SVG element `viewBox` attribute and keep it
 responsive.
