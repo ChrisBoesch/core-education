@@ -65,7 +65,7 @@ if the user is logged in.
 
 #### scceUserLogin
 
-Module: scceUser.directives
+Module: `scceUser.directives`
 
 `scceUserLogin` Directive creating a login info link for a boostrap navbar.
 
@@ -91,6 +91,25 @@ Module: scceUser.directives
     </div>
   </div>
 </header>
+```
+
+### SVG helpers
+
+#### scceSvgContainer
+
+Module: `scceUser.directives`
+
+`scceSvgContainer` set the a `svg element `viewBox` attribute and keep it
+responsive.
+
+```
+[...]
+  $scope.layout = {width: 200, height: 100, margin: {top: 10, left: 20}};
+[...]
+
+  <scce-svg-container scce-viewbox="layout">
+   <svg><text>Hello</text></svg>
+  </scce-svg-container>
 ```
 
 
