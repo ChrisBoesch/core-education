@@ -143,13 +143,6 @@
 
           return scceApi.one('user').get(params).then(function(data) {
             return data;
-          }).
-          catch (function(resp) {
-            if (resp.status === 401) {
-              return resp.data;
-            } else {
-              return $q.reject(resp);
-            }
           });
         },
 

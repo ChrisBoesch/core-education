@@ -23,8 +23,9 @@
         bob = {
           'name': 'bob',
           'isAdmin': true,
-          'isStaff': false,
-          'isStudent': false,
+          'isLoggedIn': true,
+          'staffId': null,
+          'studentId': null,
           'logoutUrl': '/logout',
         };
       }));
@@ -32,13 +33,7 @@
       it('query the server for the current user', function() {
         var info;
 
-        $httpBackend.expectGET(/\/api\/v1\/user\?returnUrl=.*/).respond({
-          'name': 'bob',
-          'isAdmin': true,
-          'isStaff': false,
-          'isStudent': false,
-          'logoutUrl': '/logout',
-        });
+        $httpBackend.expectGET(/\/api\/v1\/user\?returnUrl=.*/).respond(bob);
 
         currentUserApi.auth().then(function(_info) {
           info = _info;
@@ -64,11 +59,10 @@
       it('return the log in url for logged off users', function() {
         var info;
 
-        $httpBackend.expectGET('/api/v1/user?returnUrl=%2Ffoo').respond(function() {
-          return [401, {
-            'error': 'No user logged in',
-            'loginUrl': '/login'
-          }];
+        $httpBackend.expectGET('/api/v1/user?returnUrl=%2Ffoo').respond({
+          'isAdmin': false,
+          'isLoggedIn': false,
+          'loginUrl': '/login'
         });
 
         currentUserApi.auth('/foo').then(function(_info) {
@@ -199,9 +193,7 @@
       });
 
       it('should keep user.loginUrl after 401 resp', function() {
-        $httpBackend.whenGET(/\/api\/v1\/user/).respond(function(){
-          return [401, {loginUrl: '/login'}];
-        });
+        $httpBackend.whenGET(/\/api\/v1\/user/).respond({loginUrl: '/login'});
         currentUserApi.auth();
         $httpBackend.flush();
 
