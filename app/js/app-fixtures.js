@@ -14,14 +14,16 @@
     data: {
       user: {
         isAdmin: true,
-        isStaff: false,
+        isLoggedIn: true,
+        staffId: null,
+        studentId: null,
         logoutUrl: '/logout',
-        isStudent: false,
         name: 'test@example.com'
       },
       loginError: {
         loginUrl: '/login',
-        error: 'You are not logged in.'
+        isAdmin: false,
+        isLoggedIn: false,
       },
       students: {
         x1: {
