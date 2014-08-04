@@ -13,29 +13,74 @@
     },
     data: {
       user: {
-        isAdmin: true,
-        isLoggedIn: true,
-        staffId: null,
-        studentId: null,
-        logoutUrl: '/logout',
-        name: 'test@example.com'
+        'image': {
+          'url': 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50',
+          'isDefault': true
+        },
+        'emails': [{
+          'type': 'account',
+          'value': 'damien@example.com'
+        }],
+        'hasCredentials': true,
+        'isStudent': true,
+        'verified': false,
+        'isLoggedIn': true,
+        'domain': 'example.com',
+        'isAdmin': false,
+        'id': '12345',
+        'loginUrl': '/api/login',
+        'logoutUrl': '/_ah/login?continue=http%3A//localhost%3A8080/dashboard/&action=logout',
+        'displayName': 'Damien Lebrun',
+        'isDomainAdmin': false,
+        'name': {
+          'givenName': 'Damien',
+          'familyName': 'Lebrun'
+        },
+        'isStaff': false
       },
       loginError: {
-        loginUrl: '/login',
-        isAdmin: false,
-        isLoggedIn: false,
+        'hasCredentials': false,
+        'isStudent': false,
+        'isLoggedIn': false,
+        'isDomainAdmin': false,
+        'isAdmin': false,
+        'isStaff': false,
+        'loginUrl': '/api/login'
       },
-      students: {
-        x1: {
-          'firstName': 'Alice',
-          'lastName': 'Smith',
-          'id': 'x1'
+      userList: {
+        '12345': {
+          'image': {
+            'url': 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50',
+            'isDefault': true
+          },
+          'verified': false,
+          'isStudent': true,
+          'isStaff': true,
+          'domain': 'chrisboesch.com',
+          'displayName': 'Chris Boesch',
+          'id': '12345',
+          'name': {
+            'givenName': 'Chris',
+            'familyName': 'Boesch'
+          }
         },
-        x2: {
-          'firstName': 'Bob',
-          'lastName': 'Taylor',
-          'id': 'x2'
+        '12346': {
+          'image': {
+            'url': 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50',
+            'isDefault': true
+          },
+          'verified': false,
+          'isStudent': true,
+          'isStaff': false,
+          'domain': 'chrisboesch.com',
+          'displayName': 'Damien Lebrun',
+          'id': '12346',
+          'name': {
+            'givenName': 'Damien',
+            'familyName': 'Lebrun'
+          }
         }
+
       }
     }
   })

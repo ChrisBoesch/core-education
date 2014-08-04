@@ -48,12 +48,25 @@
   var interceptor = function(data, operation, what) {
     var resp;
 
-    if (operation === 'getList') {
-      resp = data[what] ? data[what] : [];
-      resp.cursor = data.cursor ? data.cursor : null;
-    } else {
-      resp = data;
+    if (operation !== 'getList') {
+      return data;
     }
+
+    if (!data) {
+      resp = [];
+      resp.cursor = null;
+      return resp;
+    }
+
+    if (data.type && data[data.type]) {
+      resp = data[data.type];
+    } else if (data[what]) {
+      resp = data[what];
+    } else {
+      resp = [];
+    }
+
+    resp.cursor = data.cursor ? data.cursor : null;
     return resp;
   };
 
@@ -272,67 +285,7 @@
         userType: '@scceUserType'
       }
     };
-  }).
-
-  /**
-   * Form to create a new user.
-   *
-   * usage:
-   *
-   *  <scce-user-form
-   *    scce-user-type="student"
-   *    scce-user-handler="submitNewStudent"
-   *   >
-   *  </scce-user-form>
-   *
-   * Where `scce-user-type` is either 'student' or 'staff' and
-   * scce-user-handler reference a function trigger when the form is submitted
-   * .It take a user as argument and returning a promise that should resolve
-   * a truthy value when the form is safe to reset.
-   *
-   * If the handler return a positive value instead of a promise, the form
-   * will be reset right after submission.
-   *
-   */
-  directive('scceUserForm', ['$q',
-    function($q) {
-      return {
-        restrict: 'E',
-        templateUrl: 'views/sccoreeducation/user/form.html',
-        controller: ['$scope',
-          function($scope) {
-            $scope.submitNewUser = function(newUser) {
-              if (!$scope.onSubmit) {
-                $scope.reset();
-                return;
-              }
-
-              $scope.disableForm = true;
-              $q.when($scope.onSubmit(newUser)).then(function(result) {
-                if (result) {
-                  $scope.reset();
-                }
-              });
-            };
-
-            $scope.reset = function() {
-              $scope.disableForm = false;
-              $scope.newUser = {};
-            };
-
-            $scope.reset();
-          }
-        ],
-        scope: {
-          userType: '@scceUserType',
-          onSubmit: '=scceUserHandler'
-        }
-      };
-    }
-  ])
-
-
-  ;
+  });
 
 })();
 (function() {
@@ -346,12 +299,6 @@
       return {
         all: function() {
           return scceApi.all('students').getList();
-        },
-        add: function(data) {
-          return scceApi.all('students').post(data);
-        },
-        edit: function(id, data) {
-          scceApi.one('students', id).customPUT(data);
         }
       };
     }
@@ -370,13 +317,6 @@
   controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
     function($scope, scceStudentsApi) {
       $scope.students = null;
-
-      $scope.submitNewStudent = function(newStudent) {
-        scceStudentsApi.add(newStudent).then(function(student) {
-          $scope.students.push(student);
-          return 'done';
-        });
-      };
 
       $scope.listStudent = function() {
         return scceStudentsApi.all().then(function(list) {
@@ -413,11 +353,8 @@
         all: function() {
           return scceApi.all('staff').getList();
         },
-        add: function(data) {
-          return scceApi.all('staff').post(data);
-        },
-        edit: function(id, data) {
-          scceApi.one('staff', id).customPUT(data);
+        add: function(userId) {
+          return scceApi.one('staff', userId).put();
         }
       };
     }
@@ -437,13 +374,6 @@
     function($scope, scceStaffApi) {
       $scope.staff = null;
 
-      $scope.submitNewStaff = function(newStaff) {
-        return scceStaffApi.add(newStaff).then(function(staff) {
-          $scope.staff.push(staff);
-          return 'done';
-        });
-      };
-
       $scope.listStaff = function() {
         return scceStaffApi.all().then(function(list) {
           $scope.staff = list;
@@ -453,7 +383,7 @@
           if (data.status === 401) {
             $scope.error = 'You need to be logged in to view the list.';
           } else if (data.status === 403) {
-            $scope.error = 'Only admins or staff can list staff.';
+            $scope.error = 'Only admins can list staff.';
           } else {
             $scope.error = 'Unexpected error.';
           }

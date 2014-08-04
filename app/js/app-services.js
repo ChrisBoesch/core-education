@@ -4,12 +4,25 @@
   var interceptor = function(data, operation, what) {
     var resp;
 
-    if (operation === 'getList') {
-      resp = data[what] ? data[what] : [];
-      resp.cursor = data.cursor ? data.cursor : null;
-    } else {
-      resp = data;
+    if (operation !== 'getList') {
+      return data;
     }
+
+    if (!data) {
+      resp = [];
+      resp.cursor = null;
+      return resp;
+    }
+
+    if (data.type && data[data.type]) {
+      resp = data[data.type];
+    } else if (data[what]) {
+      resp = data[what];
+    } else {
+      resp = [];
+    }
+
+    resp.cursor = data.cursor ? data.cursor : null;
     return resp;
   };
 

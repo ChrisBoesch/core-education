@@ -47,66 +47,6 @@
         userType: '@scceUserType'
       }
     };
-  }).
-
-  /**
-   * Form to create a new user.
-   *
-   * usage:
-   *
-   *  <scce-user-form
-   *    scce-user-type="student"
-   *    scce-user-handler="submitNewStudent"
-   *   >
-   *  </scce-user-form>
-   *
-   * Where `scce-user-type` is either 'student' or 'staff' and
-   * scce-user-handler reference a function trigger when the form is submitted
-   * .It take a user as argument and returning a promise that should resolve
-   * a truthy value when the form is safe to reset.
-   *
-   * If the handler return a positive value instead of a promise, the form
-   * will be reset right after submission.
-   *
-   */
-  directive('scceUserForm', ['$q',
-    function($q) {
-      return {
-        restrict: 'E',
-        templateUrl: 'views/sccoreeducation/user/form.html',
-        controller: ['$scope',
-          function($scope) {
-            $scope.submitNewUser = function(newUser) {
-              if (!$scope.onSubmit) {
-                $scope.reset();
-                return;
-              }
-
-              $scope.disableForm = true;
-              $q.when($scope.onSubmit(newUser)).then(function(result) {
-                if (result) {
-                  $scope.reset();
-                }
-              });
-            };
-
-            $scope.reset = function() {
-              $scope.disableForm = false;
-              $scope.newUser = {};
-            };
-
-            $scope.reset();
-          }
-        ],
-        scope: {
-          userType: '@scceUserType',
-          onSubmit: '=scceUserHandler'
-        }
-      };
-    }
-  ])
-
-
-  ;
+  });
 
 })();
