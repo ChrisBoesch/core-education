@@ -13,24 +13,33 @@
 
 
   run(function($httpBackend, SC_CORE_EDUCATION_FIXTURES) {
-    var fix = SC_CORE_EDUCATION_FIXTURES,
-      students = fix.data.students;
+    var fix = SC_CORE_EDUCATION_FIXTURES;
 
     $httpBackend.whenGET(fix.urls.login).respond(fix.data.user);
 
     $httpBackend.whenGET(fix.urls.students).respond({
-      students: Object.keys(students).map(function(id) {
-        return students[id];
+      type: 'users',
+      users: Object.keys(fix.data.userList).filter(function(id) {
+        return fix.data.userList[id].isStudent;
+      }).map(function(id) {
+        return fix.data.userList[id];
       }),
       cursor: null
     });
+
     $httpBackend.whenPOST(fix.urls.students).respond(echo);
 
 
     $httpBackend.whenGET(fix.urls.staff).respond({
-      students: [],
+      type: 'users',
+      users: Object.keys(fix.data.userList).filter(function(id) {
+        return fix.data.userList[id].isStaff;
+      }).map(function(id) {
+        return fix.data.userList[id];
+      }),
       cursor: null
     });
+
     $httpBackend.whenPOST(fix.urls.staff).respond(echo);
 
     $httpBackend.whenGET(/.*/).passThrough();

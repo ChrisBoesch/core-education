@@ -9,13 +9,6 @@
     function($scope, scceStudentsApi) {
       $scope.students = null;
 
-      $scope.submitNewStudent = function(newStudent) {
-        scceStudentsApi.add(newStudent).then(function(student) {
-          $scope.students.push(student);
-          return 'done';
-        });
-      };
-
       $scope.listStudent = function() {
         return scceStudentsApi.all().then(function(list) {
           $scope.students = list;

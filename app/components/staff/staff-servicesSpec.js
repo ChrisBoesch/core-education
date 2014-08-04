@@ -5,36 +5,38 @@
   'use strict';
 
   describe('scceStaff.services', function() {
-    var $httpBackend, scope, $;
+    var $httpBackend, scope, $, fix;
 
-    beforeEach(module('scceStaff.services'));
+    beforeEach(module('scceStaff.services', 'scCoreEducationMocked.fixtures'));
 
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $window) {
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $window, SC_CORE_EDUCATION_FIXTURES) {
       $httpBackend = _$httpBackend_;
       scope = $rootScope.$new();
       $ = $window.jQuery;
+      fix = SC_CORE_EDUCATION_FIXTURES;
     }));
 
     describe('scceStaffApi', function() {
-      var staffApi, staffList = [{
-          firstName: 'Alice',
-          lastName: 'Smith',
-          id: 'x1'
-        }, {
-          firstName: 'Bob',
-          lastName: 'Taylor',
-          id: 'x2'
-        }];
+      var staffApi, staffList = [];
 
       beforeEach(inject(function(scceStaffApi) {
         staffApi = scceStaffApi;
+        staffList = Object.keys(fix.data.userList).filter(function(id) {
+          return fix.data.userList[id].isStaff;
+        }).map(function(id) {
+          return fix.data.userList[id];
+        });
       }));
 
       it('should query the server for the list of staff', function() {
         var staff;
 
         $httpBackend.expectGET('/api/v1/staff').respond(
-          JSON.stringify({staff: staffList, cursor: 'foo'})
+          JSON.stringify({
+            type: 'users',
+            users: staffList,
+            cursor: 'foo'
+          })
         );
 
         staffApi.all().then(function(_staff) {
@@ -42,41 +44,15 @@
         });
 
         $httpBackend.flush();
-        expect(staff.length).toBe(2);
+        expect(staff.length).toBe(staffList.length);
         expect(staff[0].id).toEqual(staffList[0].id);
-        expect(staff[1].id).toEqual(staffList[1].id);
         expect(staff.cursor).toBe('foo');
       });
 
       it('should add new staff', function() {
-        var postData, member;
-
-        $httpBackend.expectPOST('/api/v1/staff').respond(function(meth, url, rawData) {
-          postData = JSON.parse(rawData);
-          return [200, JSON.stringify(staffList[0])];
-        });
-
-        staffApi.add(staffList[0]).then(function(data) {
-          member = data;
-        });
-
+        $httpBackend.expectPUT('/api/v1/staff/12345').respond({});
+        staffApi.add('12345').then();
         $httpBackend.flush();
-        expect(postData).toEqual(staffList[0]);
-        expect(member.id).toBe('x1');
-      });
-
-      it('should update new staff', function() {
-        var postData;
-
-        $httpBackend.expectPUT('/api/v1/staff/x1').respond(function(meth, url, rawData) {
-          postData = JSON.parse(rawData);
-          return [200, ''];
-        });
-
-        staffApi.edit('x1', {photo: 'http://example.com/photo'});
-
-        $httpBackend.flush();
-        expect(postData).toEqual({photo: 'http://example.com/photo'});
       });
 
     });
