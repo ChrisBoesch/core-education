@@ -7,9 +7,11 @@
 
   constant('SC_CORE_EDUCATION_FIXTURES', {
     urls: {
-      login: /\/api\/v1\/user/,
+      login: /\/api\/v1\/user($|\?.+)/,
+      users: '/api/v1/users',
       students: '/api/v1/students',
-      staff: '/api/v1/staff'
+      staff: '/api/v1/staff',
+      newStaff: /\/api\/v1\/staff\/(\d+)/
     },
     data: {
       user: {
@@ -79,7 +81,23 @@
             'givenName': 'Damien',
             'familyName': 'Lebrun'
           }
-        }
+        },
+        '12347': {
+          'image': {
+            'url': 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50',
+            'isDefault': true
+          },
+          'verified': false,
+          'isStudent': false,
+          'isStaff': false,
+          'domain': null,
+          'displayName': 'Bob Smith',
+          'id': '12347',
+          'name': {
+            'givenName': 'Bob',
+            'familyName': 'Smith'
+          }
+        },
 
       }
     }

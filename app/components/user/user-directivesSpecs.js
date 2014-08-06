@@ -9,7 +9,6 @@
 
     beforeEach(module(
       'scceUser.directives',
-      'views/sccoreeducation/user/grid.html',
       'views/sccoreeducation/user/login.html',
       'scCoreEducationMocked.fixtures'
     ));
@@ -57,54 +56,6 @@
         expect(elem.find('li:eq(1) a').prop('href')).toBeTruthy();
       });
 
-    });
-
-
-    describe('scceUserGrid', function() {
-
-      beforeEach(function() {
-        elem = $compile('<scce-user-grid scce-users="students" scce-user-type="students"></scce-user-grid>')($scope);
-        $scope.$digest();
-      });
-
-      it('should initialy be loading', function() {
-        expect(elem.find('table').length).toBe(1);
-        expect(elem.find('thead tr').length).toBe(1);
-        expect(elem.find('tbody tr').length).toBe(1);
-        expect(elem.find('tbody tr td').text()).toBe('Loading students');
-      });
-
-      it('should show the the grid as empty when users is an empty grid', function() {
-        $scope.students = [];
-        $scope.$digest();
-        expect(elem.find('tbody tr').length).toBe(1);
-        expect(elem.find('tbody tr td').text()).toBe('No students');
-      });
-
-      it('should display users infos', function() {
-        $scope.students = Object.keys(fix.data.userList).filter(function(id) {
-          return fix.data.userList[id].isStudent;
-        }).map(function(id) {
-          return fix.data.userList[id];
-        });
-        $scope.$digest();
-
-        expect(elem.find('tbody tr').length).toBe($scope.students.length);
-        expect(elem.find('tbody tr td').length).toBe(3 * $scope.students.length);
-
-        $scope.students.pop();
-        $scope.$digest();
-        expect(elem.find('tbody tr').length).toBe($scope.students.length);
-      });
-
-      it('should show the the grid as loading if user is reset to null', function() {
-        $scope.students = [];
-        $scope.$digest();
-        $scope.students = null;
-        $scope.$digest();
-        expect(elem.find('tbody tr').length).toBe(1);
-        expect(elem.find('tbody tr td').text()).toBe('Loading students');
-      });
     });
 
   });

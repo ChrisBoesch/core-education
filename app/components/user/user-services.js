@@ -76,6 +76,54 @@
   ]).
 
   /**
+   * Api to query users.
+   *
+   * scceUsersApi.users, scceUsersApi.students and scceUsersApi.staff
+   * return promises that resolve to list of user.
+   *
+   * makeStaff sends a request make a user a member of staff.
+   *
+   * TODO: add support to revoke staff.
+   */
+  factory('scceUsersApi', ['scceApi',
+    function(scceApi) {
+      return {
+
+        all: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('users').getList(params);
+        },
+
+        students: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('students').getList(params);
+        },
+
+        staff: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('staff').getList(params);
+        },
+
+        makeStaff: function(user) {
+          return scceApi.one('staff', user.id).put();
+        }
+      };
+    }
+  ]).
+
+  /**
    * Intercept http response error to reset scceCurrentUserApi on http
    * 401 response.
    *
