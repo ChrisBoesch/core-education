@@ -17,6 +17,14 @@
 
     $httpBackend.whenGET(fix.urls.login).respond(fix.data.user);
 
+    $httpBackend.whenGET(fix.urls.users).respond({
+      type: 'users',
+      users: Object.keys(fix.data.userList).map(function(id) {
+        return fix.data.userList[id];
+      }),
+      cursor: null
+    });
+
     $httpBackend.whenGET(fix.urls.students).respond({
       type: 'users',
       users: Object.keys(fix.data.userList).filter(function(id) {
@@ -30,17 +38,25 @@
     $httpBackend.whenPOST(fix.urls.students).respond(echo);
 
 
-    $httpBackend.whenGET(fix.urls.staff).respond({
-      type: 'users',
-      users: Object.keys(fix.data.userList).filter(function(id) {
-        return fix.data.userList[id].isStaff;
-      }).map(function(id) {
-        return fix.data.userList[id];
-      }),
-      cursor: null
+    $httpBackend.whenGET(fix.urls.staff).respond(function() {
+      return [200, {
+        type: 'users',
+        users: Object.keys(fix.data.userList).filter(function(id) {
+          return fix.data.userList[id].isStaff;
+        }).map(function(id) {
+          return fix.data.userList[id];
+        }),
+        cursor: null
+      }];
     });
 
     $httpBackend.whenPOST(fix.urls.staff).respond(echo);
+
+    $httpBackend.whenPUT(fix.urls.newStaff).respond(function(meth, url) {
+      var userId = fix.urls.newStaff.exec(url)[1];
+      fix.data.userList[userId].isStaff = true;
+      return [200, {}];
+    });
 
     $httpBackend.whenGET(/.*/).passThrough();
 

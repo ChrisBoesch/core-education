@@ -146,9 +146,10 @@
         $http.get('/api/v1/foo/');
         $httpBackend.flush();
 
-        expect(currentUserApi.info).toEqual(
-          {'loginUrl': fix.data.user.loginUrl, 'error': undefined}
-        );
+        expect(currentUserApi.info).toEqual({
+          'loginUrl': fix.data.user.loginUrl,
+          'error': undefined
+        });
       });
 
       it('should reset user after 401 resp to a url to same domain', function() {
@@ -165,9 +166,10 @@
         $http.get('http://server/foo/');
         $httpBackend.flush();
 
-        expect(currentUserApi.info).toEqual(
-          {'loginUrl': fix.data.user.loginUrl, 'error': undefined}
-        );
+        expect(currentUserApi.info).toEqual({
+          'loginUrl': fix.data.user.loginUrl,
+          'error': undefined
+        });
       });
 
       it('should not reset user after 401 resp to other domain', function() {
@@ -208,6 +210,221 @@
 
     });
 
+    describe('scceUsersApi', function() {
+      var usersApi, users;
+
+      beforeEach(inject(function(scceUsersApi) {
+        usersApi = scceUsersApi;
+        users = fix.data.userList;
+      }));
+
+      describe('all', function() {
+
+        it('should query all users', function() {
+          $httpBackend.expectGET('/api/v1/users').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _.map(users),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.all();
+          $httpBackend.flush();
+        });
+
+        it('should return a promise', function() {
+          expect(usersApi.all().then).toBeDefined();
+        });
+
+        it('should return a promise resolving to an array of user', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/users').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _.map(users),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.all().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.length > 0).toBe(true);
+          expect(data.length).toBe(_.map(users).length);
+        });
+
+        it('should return promise resolving to array with a cursor', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/users').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _.map(users),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.all().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.cursor).toBe('foo');
+        });
+
+      });
+
+      describe('students', function() {
+
+        it('should query students users', function() {
+          $httpBackend.expectGET('/api/v1/students').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStudent;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.students();
+          $httpBackend.flush();
+        });
+
+        it('should return a promise', function() {
+          expect(usersApi.students().then).toBeDefined();
+        });
+
+        it('should return a promise resolving to an array of user', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/students').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStudent;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.students().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.length > 0).toBe(true);
+          expect(data.length).toBe(_(users).map().filter(function(user) {
+            return user.isStudent;
+          }).value().length);
+        });
+
+        it('should return promise resolving to array with a cursor', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/students').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStudent;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.students().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.cursor).toBe('foo');
+        });
+
+      });
+
+      describe('staff', function() {
+
+        it('should query staff users', function() {
+          $httpBackend.expectGET('/api/v1/staff').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStaff;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.staff();
+          $httpBackend.flush();
+        });
+
+        it('should return a promise', function() {
+          expect(usersApi.staff().then).toBeDefined();
+        });
+
+        it('should return a promise resolving to an array of user', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/staff').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStaff;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.staff().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.length > 0).toBe(true);
+          expect(data.length).toBe(_(users).map().filter(function(user) {
+            return user.isStaff;
+          }).value().length);
+        });
+
+        it('should return promise resolving to array with a cursor', function() {
+          var data;
+
+          $httpBackend.whenGET('/api/v1/staff').respond(
+            JSON.stringify({
+              type: 'users',
+              users: _(users).map().filter(function(user) {
+                return user.isStaff;
+              }).value(),
+              cursor: 'foo'
+            })
+          );
+
+          usersApi.staff().then(function(users) {
+            data = users;
+          });
+          $httpBackend.flush();
+
+          expect(data.cursor).toBe('foo');
+        });
+
+      });
+
+      describe('makeStaff', function(){
+
+        it('should put a new staff', function() {
+          $httpBackend.expectPUT('/api/v1/staff/12345').respond({});
+          usersApi.makeStaff({id:'12345'});
+          $httpBackend.flush();
+        });
+
+      });
+
+    });
   });
 
 })();

@@ -2,31 +2,68 @@
   'use strict';
 
   angular.module(
-    'scCoreEducation',
-    [
+    'scCoreEducation', [
       'ngRoute',
-      'scCoreEducation.controllers',
-      'scceStudents.controllers',
-      'scceStaff.controllers',
+      'scceUser.controllers',
       'scceUser.directives',
+      'scCoreEducation.controllers',
       'scCoreEducation.templates'
     ]
   ).
 
   config(['$routeProvider',
     function($routeProvider) {
+
+      function resolver(meth, userType) {
+        return {
+          'getList': ['scceUsersApi',
+            function(scceUsersApi) {
+              return scceUsersApi[meth];
+            }
+          ],
+          'initialList': ['$location', 'scceUsersApi',
+            function($location, scceUsersApi) {
+              return scceUsersApi[meth]().catch(function() {
+                $location.path('/error');
+              });
+            }
+          ],
+          'userType': function() {
+            return userType;
+          }
+        };
+      }
+
       $routeProvider
-        .when('/students', {
-          templateUrl: 'views/sccoreeducation/studentlist.html',
-          controller: 'scceStudentListCtrl'
-        })
-        .when('/staff', {
-          templateUrl: 'views/sccoreeducation/stafflist.html',
-          controller: 'scceStaffListCtrl'
-        })
-        .otherwise({
-          redirectTo: '/students'
-        });
+
+      .when('/error', {
+        template: '<h1>Error</h1><p>You may need to be part of the staff</p>'
+      })
+
+      .when('/users', {
+        templateUrl: 'views/sccoreeducation/user-list.html',
+        controller: 'ScceUserListCtrl',
+        controllerAs: 'ctrl',
+        resolve: resolver('all', 'Users')
+      })
+
+      .when('/students', {
+        templateUrl: 'views/sccoreeducation/user-list.html',
+        controller: 'ScceUserListCtrl',
+        controllerAs: 'ctrl',
+        resolve: resolver('students', 'Students')
+      })
+
+      .when('/staff', {
+        templateUrl: 'views/sccoreeducation/user-list.html',
+        controller: 'ScceUserListCtrl',
+        controllerAs: 'ctrl',
+        resolve: resolver('staff', 'Staff')
+      })
+
+      .otherwise({
+        redirectTo: '/users'
+      });
     }
   ])
 
@@ -197,6 +234,54 @@
   ]).
 
   /**
+   * Api to query users.
+   *
+   * scceUsersApi.users, scceUsersApi.students and scceUsersApi.staff
+   * return promises that resolve to list of user.
+   *
+   * makeStaff sends a request make a user a member of staff.
+   *
+   * TODO: add support to revoke staff.
+   */
+  factory('scceUsersApi', ['scceApi',
+    function(scceApi) {
+      return {
+
+        all: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('users').getList(params);
+        },
+
+        students: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('students').getList(params);
+        },
+
+        staff: function(cursor) {
+          var params = {};
+
+          if (cursor) {
+            params.cursor = cursor;
+          }
+          return scceApi.all('staff').getList(params);
+        },
+
+        makeStaff: function(user) {
+          return scceApi.one('staff', user.id).put();
+        }
+      };
+    }
+  ]).
+
+  /**
    * Intercept http response error to reset scceCurrentUserApi on http
    * 401 response.
    *
@@ -259,140 +344,65 @@
         }
       ]
     };
-  }).
-
-  /**
-   * Directive displaying a list of user (student or staff)
-   *
-   * usage:
-   *
-   *  <scce-user-grid scce-users="studentList" scce-user-type="students">
-   *  </scce-user-grid>
-   *
-   * Where students `scce-users` should reference a list of students
-   * and `scce-user-type` is type of user ('students' or 'staff').
-   *
-   * Note that `scce-user-type` doesn't reference a scope attribute and
-   * we be evaulated either.
-   *
-   */
-  directive('scceUserGrid', function() {
-    return {
-      restrict: 'E',
-      templateUrl: 'views/sccoreeducation/user/grid.html',
-      scope: {
-        users: '=scceUsers',
-        userType: '@scceUserType'
-      }
-    };
   });
 
 })();
 (function() {
   'use strict';
 
+  angular.module('scceUser.controllers', []).
 
-  angular.module('scceStudents.services', ['scCoreEducation.services']).
+  controller('ScceUserListCtrl', ['$q', 'scceUsersApi', 'getList', 'initialList', 'userType',
+    function($q, scceUsersApi, getList, initialList, userType) {
+      var self = this;
 
-  factory('scceStudentsApi', ['scceApi',
-    function(scceApi) {
-      return {
-        all: function() {
-          return scceApi.all('students').getList();
-        }
+      this.users = initialList;
+      this.userType = userType;
+      this.loading = null;
+
+      this.updateUserList = function() {
+        this.loading = $q.when(this.loading).then(function(){
+          return getList();
+        }).then(function(users){
+          self.users = users;
+          self.loading = null;
+          return users;
+        });
+
+        return this.loading;
       };
-    }
-  ])
 
-  ;
+      this.getMore = function() {
+        if (!this.users || !this.users.cursor) {
+          return $q.when([]);
+        }
 
-})();
-(function() {
-  'use strict';
+        this.loading = $q.when(this.loading).then(function(){
+          return getList(this.users.cursor);
+        }).then(function(users){
+          self.users = self.users.concat(users);
+          self.users.cursor = users.cursor;
+          self.loading = null;
+          return users;
+        });
 
-  angular.module('scceStudents.controllers', [
-    'scceStudents.services', 'scceUser.directives', 'scCoreEducation.templates'
-  ]).
+        return this.loading;
+      };
 
-  controller('scceStudentListCtrl', ['$scope', 'scceStudentsApi',
-    function($scope, scceStudentsApi) {
-      $scope.students = null;
-
-      $scope.listStudent = function() {
-        return scceStudentsApi.all().then(function(list) {
-          $scope.students = list;
-          return list;
-        }).
-        catch (function(data) {
-          if (data.status === 401) {
-            $scope.error = 'You need to be logged in to view the list.';
-          } else if (data.status === 403) {
-            $scope.error = 'Only admins or staff can list students.';
-          } else {
-            $scope.error = 'Unexpected error.';
-          }
+      this.makeStaff = function(user) {
+        user.isStaff = true;
+        scceUsersApi.makeStaff(user).catch(function() {
+          user.isStaff = false;
         });
       };
 
-      $scope.listStudent();
-    }
-  ])
-
-  ;
-
-})();
-(function() {
-  'use strict';
-
-
-  angular.module('scceStaff.services', ['scCoreEducation.services']).
-
-  factory('scceStaffApi', ['scceApi',
-    function(scceApi) {
-      return {
-        all: function() {
-          return scceApi.all('staff').getList();
-        },
-        add: function(userId) {
-          return scceApi.one('staff', userId).put();
-        }
+      this.revokeStaff = function(user) {
+        // TODO
+        console.dir(user);
       };
     }
   ])
 
-  ;
-
-})();
-(function() {
-  'use strict';
-
-  angular.module('scceStaff.controllers', [
-    'scceStaff.services', 'scceUser.directives', 'scCoreEducation.templates'
-  ]).
-
-  controller('scceStaffListCtrl', ['$scope', 'scceStaffApi',
-    function($scope, scceStaffApi) {
-      $scope.staff = null;
-
-      $scope.listStaff = function() {
-        return scceStaffApi.all().then(function(list) {
-          $scope.staff = list;
-          return list;
-        }).
-        catch (function(data) {
-          if (data.status === 401) {
-            $scope.error = 'You need to be logged in to view the list.';
-          } else if (data.status === 403) {
-            $scope.error = 'Only admins can list staff.';
-          } else {
-            $scope.error = 'Unexpected error.';
-          }
-        });
-      };
-
-      $scope.listStaff();
-    }
-  ])
 
   ;
 
@@ -477,6 +487,52 @@
     };
   })
 
+
+  ;
+
+})();
+(function() {
+  'use strict';
+
+
+  angular.module('scceStaff.services', ['scCoreEducation.services']).
+
+  factory('scceStaffApi', ['scceApi',
+    function(scceApi) {
+      return {
+        all: function() {
+          console.log('Deprecated... Use scceUsersApi.students() instead');
+          return scceApi.all('staff').getList();
+        },
+        add: function(userId) {
+          console.log(
+            'Deprecated... Use scceUsersApi.makeStaff({id:userID}) instead'
+          );
+          return scceApi.one('staff', userId).put();
+        }
+      };
+    }
+  ])
+
+  ;
+
+})();
+(function() {
+  'use strict';
+
+
+  angular.module('scceStudents.services', ['scCoreEducation.services']).
+
+  factory('scceStudentsApi', ['scceApi',
+    function(scceApi) {
+      return {
+        all: function() {
+          console.log('Deprecated... Use scceUsersApi.students() instead');
+          return scceApi.all('students').getList();
+        }
+      };
+    }
+  ])
 
   ;
 

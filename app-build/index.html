@@ -29,6 +29,9 @@
         </div>
         <div class="navbar-collapse collapse" id="main-nav">
           <ul class="nav navbar-nav">
+            <li ng-class="{active: isActive('/users')}">
+              <a ng-href="#/users">Users</a>
+            </li>
             <li ng-class="{active: isActive('/students')}">
               <a ng-href="#/students">Students</a>
             </li>
