@@ -109,12 +109,17 @@
 
   angular.module('scCoreEducation.services', ['restangular', 'scCoreEducation.config']).
 
-  service('scceApi', ['Restangular', 'SCCE_API_BASE',
+  factory('scceApi', ['Restangular', 'SCCE_API_BASE',
     function(Restangular, SCCE_API_BASE) {
-      return Restangular.withConfig(function(RestangularConfigurer) {
-        RestangularConfigurer.setBaseUrl(SCCE_API_BASE);
-        RestangularConfigurer.addResponseInterceptor(interceptor);
-      });
+      return {
+        client: function(appName) {
+          return Restangular.withConfig(function(RestangularConfigurer) {
+            RestangularConfigurer.setBaseUrl(SCCE_API_BASE);
+            RestangularConfigurer.addResponseInterceptor(interceptor);
+            RestangularConfigurer.setDefaultHeaders({'X-App-Name': appName});
+          });
+        }
+      };
     }
   ])
 
@@ -146,21 +151,38 @@
 (function() {
   'use strict';
 
-  angular.module('scceUser.config', []).
-
-
-  constant('scceUserConfig', {
-    defaultReturnUrl: null, // Should retunr to the current url.
-  })
-
-  ;
-
-})();
-(function() {
-  'use strict';
+  // Keep a reference to scceCurrentUserApi to avoid for the interceptor
+  // to avoid a circular dependency.
+  //
+  // TODO: Create a session service which both scceCurrentUserApi
+  // and the the http inceptor can depend on.
   var api;
 
-  angular.module('scceUser.services', ['scCoreEducation.services', 'scceUser.config']).
+
+  angular.module('scceUser.services', ['scCoreEducation.services']).
+
+
+  provider('scceUserOptions', function scceUserOptionsProvider() {
+    this.appName = 'core';
+    this.apiClient = null;
+    this.defaultReturnUrl = null; // Should return to the current URL.
+
+    this.setAppName = function(name) {
+      this.appName = name;
+    };
+
+    this.setDefaultUrl = function(url) {
+      this.defaultReturnUrl = url;
+    };
+
+    this.$get = ['scceApi', function(scceApi) {
+      return {
+        appName: this.appName,
+        apiClient: scceApi.client(this.appName),
+        defaultReturnUrl: this.defaultReturnUrl
+      };
+    }];
+  }).
 
   /**
    * scceCurrentUserApi - api to access user info.
@@ -176,8 +198,10 @@
    * TODO: handle lose of authentication.
    *
    */
-  factory('scceCurrentUserApi', ['$location', '$q', 'scceApi', 'scceUserConfig',
-    function($location, $q, scceApi, scceUserConfig) {
+  factory('scceCurrentUserApi', ['$location', '$q', 'scceUserOptions',
+    function($location, $q, scceUserOptions) {
+      var client = scceUserOptions.apiClient;
+
       api = {
         info: null,
         loading: null,
@@ -186,12 +210,12 @@
           var params = {
             returnUrl: (
               returnUrl ||
-              scceUserConfig.defaultReturnUrl ||
+              scceUserOptions.defaultReturnUrl ||
               $location.absUrl()
             )
           };
 
-          return scceApi.one('user').get(params).then(function(data) {
+          return client.one('user').get(params).then(function(data) {
             return data;
           });
         },
@@ -243,8 +267,10 @@
    *
    * TODO: add support to revoke staff.
    */
-  factory('scceUsersApi', ['scceApi',
-    function(scceApi) {
+  factory('scceUsersApi', ['scceUserOptions',
+    function(scceUserOptions) {
+      var client = scceUserOptions.apiClient;
+
       return {
 
         all: function(cursor) {
@@ -253,7 +279,7 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('users').getList(params);
+          return client.all('users').getList(params);
         },
 
         students: function(cursor) {
@@ -262,7 +288,7 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('students').getList(params);
+          return client.all('students').getList(params);
         },
 
         staff: function(cursor) {
@@ -271,11 +297,11 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('staff').getList(params);
+          return client.all('staff').getList(params);
         },
 
         makeStaff: function(user) {
-          return scceApi.one('staff', user.id).put();
+          return client.one('staff', user.id).put();
         }
       };
     }
@@ -300,6 +326,7 @@
       return {
         responseError: function(resp) {
           if (
+            api &&
             resp.status === 401 &&
             isSameDomain(resp.config.url)
           ) {
@@ -497,18 +524,20 @@
 
   angular.module('scceStaff.services', ['scCoreEducation.services']).
 
-  factory('scceStaffApi', ['scceApi',
-    function(scceApi) {
+  factory('scceStaffApi', ['scceUsersApi',
+    function(scceUsersApi) {
       return {
         all: function() {
           console.log('Deprecated... Use scceUsersApi.students() instead');
-          return scceApi.all('staff').getList();
+          return scceUsersApi.students();
         },
         add: function(userId) {
           console.log(
             'Deprecated... Use scceUsersApi.makeStaff({id:userID}) instead'
           );
-          return scceApi.one('staff', userId).put();
+          return scceUsersApi.makeStaff({
+            id: userId
+          });
         }
       };
     }
@@ -523,12 +552,12 @@
 
   angular.module('scceStudents.services', ['scCoreEducation.services']).
 
-  factory('scceStudentsApi', ['scceApi',
-    function(scceApi) {
+  factory('scceStudentsApi', ['scceUsersApi',
+    function(scceUsersApi) {
       return {
         all: function() {
           console.log('Deprecated... Use scceUsersApi.students() instead');
-          return scceApi.all('students').getList();
+          return scceUsersApi.students();
         }
       };
     }

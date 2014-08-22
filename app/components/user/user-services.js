@@ -1,8 +1,38 @@
 (function() {
   'use strict';
+
+  // Keep a reference to scceCurrentUserApi to avoid for the interceptor
+  // to avoid a circular dependency.
+  //
+  // TODO: Create a session service which both scceCurrentUserApi
+  // and the the http inceptor can depend on.
   var api;
 
-  angular.module('scceUser.services', ['scCoreEducation.services', 'scceUser.config']).
+
+  angular.module('scceUser.services', ['scCoreEducation.services']).
+
+
+  provider('scceUserOptions', function scceUserOptionsProvider() {
+    this.appName = 'core';
+    this.apiClient = null;
+    this.defaultReturnUrl = null; // Should return to the current URL.
+
+    this.setAppName = function(name) {
+      this.appName = name;
+    };
+
+    this.setDefaultUrl = function(url) {
+      this.defaultReturnUrl = url;
+    };
+
+    this.$get = ['scceApi', function(scceApi) {
+      return {
+        appName: this.appName,
+        apiClient: scceApi.client(this.appName),
+        defaultReturnUrl: this.defaultReturnUrl
+      };
+    }];
+  }).
 
   /**
    * scceCurrentUserApi - api to access user info.
@@ -18,8 +48,10 @@
    * TODO: handle lose of authentication.
    *
    */
-  factory('scceCurrentUserApi', ['$location', '$q', 'scceApi', 'scceUserConfig',
-    function($location, $q, scceApi, scceUserConfig) {
+  factory('scceCurrentUserApi', ['$location', '$q', 'scceUserOptions',
+    function($location, $q, scceUserOptions) {
+      var client = scceUserOptions.apiClient;
+
       api = {
         info: null,
         loading: null,
@@ -28,12 +60,12 @@
           var params = {
             returnUrl: (
               returnUrl ||
-              scceUserConfig.defaultReturnUrl ||
+              scceUserOptions.defaultReturnUrl ||
               $location.absUrl()
             )
           };
 
-          return scceApi.one('user').get(params).then(function(data) {
+          return client.one('user').get(params).then(function(data) {
             return data;
           });
         },
@@ -85,8 +117,10 @@
    *
    * TODO: add support to revoke staff.
    */
-  factory('scceUsersApi', ['scceApi',
-    function(scceApi) {
+  factory('scceUsersApi', ['scceUserOptions',
+    function(scceUserOptions) {
+      var client = scceUserOptions.apiClient;
+
       return {
 
         all: function(cursor) {
@@ -95,7 +129,7 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('users').getList(params);
+          return client.all('users').getList(params);
         },
 
         students: function(cursor) {
@@ -104,7 +138,7 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('students').getList(params);
+          return client.all('students').getList(params);
         },
 
         staff: function(cursor) {
@@ -113,11 +147,11 @@
           if (cursor) {
             params.cursor = cursor;
           }
-          return scceApi.all('staff').getList(params);
+          return client.all('staff').getList(params);
         },
 
         makeStaff: function(user) {
-          return scceApi.one('staff', user.id).put();
+          return client.one('staff', user.id).put();
         }
       };
     }
@@ -142,6 +176,7 @@
       return {
         responseError: function(resp) {
           if (
+            api &&
             resp.status === 401 &&
             isSameDomain(resp.config.url)
           ) {

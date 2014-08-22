@@ -28,12 +28,17 @@
 
   angular.module('scCoreEducation.services', ['restangular', 'scCoreEducation.config']).
 
-  service('scceApi', ['Restangular', 'SCCE_API_BASE',
+  factory('scceApi', ['Restangular', 'SCCE_API_BASE',
     function(Restangular, SCCE_API_BASE) {
-      return Restangular.withConfig(function(RestangularConfigurer) {
-        RestangularConfigurer.setBaseUrl(SCCE_API_BASE);
-        RestangularConfigurer.addResponseInterceptor(interceptor);
-      });
+      return {
+        client: function(appName) {
+          return Restangular.withConfig(function(RestangularConfigurer) {
+            RestangularConfigurer.setBaseUrl(SCCE_API_BASE);
+            RestangularConfigurer.addResponseInterceptor(interceptor);
+            RestangularConfigurer.setDefaultHeaders({'X-App-Name': appName});
+          });
+        }
+      };
     }
   ])
 
