@@ -4,12 +4,12 @@
 
   angular.module('scceStudents.services', ['scCoreEducation.services']).
 
-  factory('scceStudentsApi', ['scceApi',
-    function(scceApi) {
+  factory('scceStudentsApi', ['scceUsersApi',
+    function(scceUsersApi) {
       return {
         all: function() {
           console.log('Deprecated... Use scceUsersApi.students() instead');
-          return scceApi.all('students').getList();
+          return scceUsersApi.students();
         }
       };
     }

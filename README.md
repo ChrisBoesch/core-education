@@ -29,6 +29,23 @@ Add the script and its dependencies to your page:
 
 ### User api
 
+#### scceUserOptions
+
+`scceUserOptions` define the app name to be used for the `X-App-Name` header.
+
+The authentication endpoint will save and retrieve authentication info in
+session named after that "app name".
+
+```
+angular.module('myApp', ['scceUser.services']).
+
+config(function(scceUserOptionsProvider) {
+  scceUserOptionsProvider.setAppName('dashboard');
+});
+
+```
+
+
 #### scceCurrentUserApi
 
 Module: `scceUser.services`
