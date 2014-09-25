@@ -60,6 +60,12 @@
       return [200, {}];
     });
 
+    $httpBackend.whenPOST(fix.urls.newStudentUploadUrl).respond({
+      url: '/_upload/'
+    });
+
+    $httpBackend.whenPOST('/_upload/').respond({});
+
     $httpBackend.whenGET(/.*/).passThrough();
 
   })

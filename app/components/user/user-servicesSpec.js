@@ -298,6 +298,20 @@
           expect(usersApi.listStudents().then).toBeDefined();
         });
 
+        it('should query an upload URL', function() {
+          var url;
+
+          $httpBackend.expectPOST('/api/v1/students/_uploadurl').respond({
+            url: '/foo'
+          });
+          usersApi.newStudentUploadUrl().then(function(_url_){
+            url = _url_;
+          });
+
+          $httpBackend.flush();
+          expect(url).toBe('/foo');
+        });
+
       });
 
 
@@ -369,11 +383,13 @@
 
       });
 
-      describe('makeStaff', function(){
+      describe('makeStaff', function() {
 
         it('should put a new staff', function() {
           $httpBackend.expectPUT('/api/v1/staff/12345').respond({});
-          usersApi.makeStaff({id:'12345'});
+          usersApi.makeStaff({
+            id: '12345'
+          });
           $httpBackend.flush();
         });
 
