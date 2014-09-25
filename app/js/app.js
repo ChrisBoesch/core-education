@@ -51,7 +51,7 @@
         templateUrl: 'views/sccoreeducation/user-list.html',
         controller: 'ScceUserListCtrl',
         controllerAs: 'ctrl',
-        resolve: resolver('students', 'Students')
+        resolve: resolver('listStudents', 'Students')
       })
 
       .when('/staff', {

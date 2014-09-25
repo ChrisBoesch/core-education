@@ -278,73 +278,28 @@
 
       });
 
+
       describe('students', function() {
 
         it('should query students users', function() {
           $httpBackend.expectGET('/api/v1/students').respond(
             JSON.stringify({
-              type: 'users',
-              users: _(users).map().filter(function(user) {
-                return user.isStudent;
-              }).value(),
+              type: 'students',
+              students: [],
               cursor: 'foo'
             })
           );
 
-          usersApi.students();
+          usersApi.listStudents();
           $httpBackend.flush();
         });
 
         it('should return a promise', function() {
-          expect(usersApi.students().then).toBeDefined();
-        });
-
-        it('should return a promise resolving to an array of user', function() {
-          var data;
-
-          $httpBackend.whenGET('/api/v1/students').respond(
-            JSON.stringify({
-              type: 'users',
-              users: _(users).map().filter(function(user) {
-                return user.isStudent;
-              }).value(),
-              cursor: 'foo'
-            })
-          );
-
-          usersApi.students().then(function(users) {
-            data = users;
-          });
-          $httpBackend.flush();
-
-          expect(data.length > 0).toBe(true);
-          expect(data.length).toBe(_(users).map().filter(function(user) {
-            return user.isStudent;
-          }).value().length);
-        });
-
-        it('should return promise resolving to array with a cursor', function() {
-          var data;
-
-          $httpBackend.whenGET('/api/v1/students').respond(
-            JSON.stringify({
-              type: 'users',
-              users: _(users).map().filter(function(user) {
-                return user.isStudent;
-              }).value(),
-              cursor: 'foo'
-            })
-          );
-
-          usersApi.students().then(function(users) {
-            data = users;
-          });
-          $httpBackend.flush();
-
-          expect(data.cursor).toBe('foo');
+          expect(usersApi.listStudents().then).toBeDefined();
         });
 
       });
+
 
       describe('staff', function() {
 

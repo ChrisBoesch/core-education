@@ -6,6 +6,7 @@
       <th>Photo</th>
       <th>First name</th>
       <th>Last name</th>
+      <th>Is registered</th>
       <th>Is student</th>
       <th>Is Staff</th>
     </tr>
@@ -15,6 +16,7 @@
       <td><img ng-src="{{user.image.url}}"/></td>
       <td>{{user.name.givenName}}</td>
       <td>{{user.name.familyName}}</td>
+      <td><input type="checkbox" ng-checked="user.id" disabled="disabled"></td>
       <td><input type="checkbox" ng-checked="user.isStudent" disabled="disabled"></td>
       <td><input type="checkbox" ng-checked="user.isStaff" ng-disabled="user.isStaff" ng-click="ctrl.makeStaff(user)"></td>
     </tr>

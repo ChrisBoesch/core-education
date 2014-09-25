@@ -51,7 +51,7 @@
         templateUrl: 'views/sccoreeducation/user-list.html',
         controller: 'ScceUserListCtrl',
         controllerAs: 'ctrl',
-        resolve: resolver('students', 'Students')
+        resolve: resolver('listStudents', 'Students')
       })
 
       .when('/staff', {
@@ -70,6 +70,7 @@
   ;
 
 })();
+
 (function() {
   'use strict';
 
@@ -175,13 +176,15 @@
       this.defaultReturnUrl = url;
     };
 
-    this.$get = ['scceApi', function(scceApi) {
-      return {
-        appName: this.appName,
-        apiClient: scceApi.client(this.appName),
-        defaultReturnUrl: this.defaultReturnUrl
-      };
-    }];
+    this.$get = ['scceApi',
+      function(scceApi) {
+        return {
+          appName: this.appName,
+          apiClient: scceApi.client(this.appName),
+          defaultReturnUrl: this.defaultReturnUrl
+        };
+      }
+    ];
   }).
 
   /**
@@ -246,7 +249,10 @@
 
           loginUrl = loginUrl || currentLoginUrl;
           if (loginUrl) {
-            api.info = {loginUrl: loginUrl, error: msg};
+            api.info = {
+              loginUrl: loginUrl,
+              error: msg
+            };
           } else {
             api.info = null;
           }
@@ -286,12 +292,13 @@
           return client.one('users', userId).get();
         },
 
-        students: function(cursor) {
+        listStudents: function(cursor) {
           var params = {};
 
           if (cursor) {
             params.cursor = cursor;
           }
+
           return client.all('students').getList(params);
         },
 
@@ -352,6 +359,7 @@
   ;
 
 })();
+
 (function() {
   'use strict';
 
@@ -601,54 +609,6 @@
     }
   ])
 
-
-  ;
-
-})();
-(function() {
-  'use strict';
-
-
-  angular.module('scceStaff.services', ['scCoreEducation.services']).
-
-  factory('scceStaffApi', ['scceUsersApi',
-    function(scceUsersApi) {
-      return {
-        all: function() {
-          console.log('Deprecated... Use scceUsersApi.students() instead');
-          return scceUsersApi.students();
-        },
-        add: function(userId) {
-          console.log(
-            'Deprecated... Use scceUsersApi.makeStaff({id:userID}) instead'
-          );
-          return scceUsersApi.makeStaff({
-            id: userId
-          });
-        }
-      };
-    }
-  ])
-
-  ;
-
-})();
-(function() {
-  'use strict';
-
-
-  angular.module('scceStudents.services', ['scCoreEducation.services']).
-
-  factory('scceStudentsApi', ['scceUsersApi',
-    function(scceUsersApi) {
-      return {
-        all: function() {
-          console.log('Deprecated... Use scceUsersApi.students() instead');
-          return scceUsersApi.students();
-        }
-      };
-    }
-  ])
 
   ;
 

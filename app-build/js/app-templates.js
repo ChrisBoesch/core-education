@@ -15,6 +15,7 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "      <th>Photo</th>\n" +
     "      <th>First name</th>\n" +
     "      <th>Last name</th>\n" +
+    "      <th>Is registered</th>\n" +
     "      <th>Is student</th>\n" +
     "      <th>Is Staff</th>\n" +
     "    </tr>\n" +
@@ -24,6 +25,7 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "      <td><img ng-src=\"{{user.image.url}}\"/></td>\n" +
     "      <td>{{user.name.givenName}}</td>\n" +
     "      <td>{{user.name.familyName}}</td>\n" +
+    "      <td><input type=\"checkbox\" ng-checked=\"user.id\" disabled=\"disabled\"></td>\n" +
     "      <td><input type=\"checkbox\" ng-checked=\"user.isStudent\" disabled=\"disabled\"></td>\n" +
     "      <td><input type=\"checkbox\" ng-checked=\"user.isStaff\" ng-disabled=\"user.isStaff\" ng-click=\"ctrl.makeStaff(user)\"></td>\n" +
     "    </tr>\n" +

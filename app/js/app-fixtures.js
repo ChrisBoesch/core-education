@@ -25,6 +25,7 @@
         }],
         'hasCredentials': true,
         'isStudent': true,
+        'studentId': 'A0123',
         'verified': false,
         'isLoggedIn': true,
         'domain': 'example.com',
@@ -57,6 +58,7 @@
           },
           'verified': false,
           'isStudent': true,
+          'studentId': 'A0124',
           'isStaff': true,
           'domain': 'chrisboesch.com',
           'displayName': 'Chris Boesch',
@@ -73,6 +75,7 @@
           },
           'verified': false,
           'isStudent': true,
+          'studentId': 'A0123',
           'isStaff': false,
           'domain': 'chrisboesch.com',
           'displayName': 'Damien Lebrun',
@@ -98,7 +101,39 @@
             'familyName': 'Smith'
           }
         },
+      },
 
+      studentList: {
+        'A0123': {
+          'studentId': 'A0123',
+          'displayName': 'Damien Lebrun',
+          'name': {
+            'givenName': 'Damien',
+            'familyName': 'Lebrun'
+          },
+          'year': 2015,
+          'secondaryEmail': 'a0123@nus.edu.sg',
+        },
+        'A0124': {
+          'studentId': 'A0124',
+          'displayName': 'Chris Boesch',
+          'name': {
+            'givenName': 'Chris',
+            'familyName': 'Boesch'
+          },
+          'year': 2015,
+          'secondaryEmail': 'a0124@nus.edu.sg',
+        },
+        'A0125': {
+          'studentId': 'A0125',
+          'displayName': 'Jon Doe',
+          'name': {
+            'givenName': 'Jon',
+            'familyName': 'Doe'
+          },
+          'year': 2015,
+          'secondaryEmail': 'a0125@nus.edu.sg',
+        }
       }
     }
   })
