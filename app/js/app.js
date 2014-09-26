@@ -64,7 +64,7 @@
       })
 
       .when('/students', {
-        templateUrl: 'views/sccoreeducation/user-list.html',
+        templateUrl: 'views/sccoreeducation/student-list.html',
         controller: 'ScceUserListCtrl',
         controllerAs: 'ctrl',
         resolve: resolver('listStudents', 'Students')

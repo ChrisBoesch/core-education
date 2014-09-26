@@ -1,12 +1,12 @@
-angular.module('scCoreEducation.templates', ['views/sccoreeducation/home.html', 'views/sccoreeducation/user-list.html', 'views/sccoreeducation/user/login.html']);
+angular.module('scCoreEducation.templates', ['views/sccoreeducation/home.html', 'views/sccoreeducation/student-list.html', 'views/sccoreeducation/user-list.html', 'views/sccoreeducation/user/login.html']);
 
 angular.module("views/sccoreeducation/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("views/sccoreeducation/home.html",
     "<h1>Hello world</h1>");
 }]);
 
-angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("views/sccoreeducation/user-list.html",
+angular.module("views/sccoreeducation/student-list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("views/sccoreeducation/student-list.html",
     "<h1>{{ctrl.userType}}</h1>\n" +
     "\n" +
     "<div class=\"row\">\n" +
@@ -14,21 +14,15 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "        <table class=\"table table-striped\">\n" +
     "            <thead>\n" +
     "                <tr>\n" +
-    "                    <th>Photo</th>\n" +
-    "                    <th>First name</th>\n" +
-    "                    <th>Last name</th>\n" +
+    "                    <th>Name</th>\n" +
     "                    <th>Is registered</th>\n" +
     "                    <th>Is student</th>\n" +
     "                    <th>Is Staff</th>\n" +
     "                </tr>\n" +
     "            </thead>\n" +
     "            <tbody>\n" +
-    "                <tr ng-repeat=\"user in ctrl.users track by user.id\">\n" +
-    "                    <td>\n" +
-    "                        <img ng-src=\"{{user.image.url}}\" />\n" +
-    "                    </td>\n" +
-    "                    <td>{{user.name.givenName}}</td>\n" +
-    "                    <td>{{user.name.familyName}}</td>\n" +
+    "                <tr ng-repeat=\"user in ctrl.users track by user.studentId\">\n" +
+    "                    <td>{{user.displayName}}</td>\n" +
     "                    <td>\n" +
     "                        <input type=\"checkbox\" ng-checked=\"user.id\" disabled=\"disabled\">\n" +
     "                    </td>\n" +
@@ -36,14 +30,14 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "                        <input type=\"checkbox\" ng-checked=\"user.isStudent\" disabled=\"disabled\">\n" +
     "                    </td>\n" +
     "                    <td>\n" +
-    "                        <input type=\"checkbox\" ng-checked=\"user.isStaff\" ng-disabled=\"user.isStaff\" ng-click=\"ctrl.makeStaff(user)\">\n" +
+    "                        <input type=\"checkbox\" ng-checked=\"user.isStaff\" ng-disabled=\"user.isStaff || !user.id\" ng-click=\"ctrl.makeStaff(user)\">\n" +
     "                    </td>\n" +
     "                </tr>\n" +
     "                <tr ng-if=\"ctrl.users.length == 0\">\n" +
-    "                    <td colspan=\"5\">No {{ctrl.userType}}</td>\n" +
+    "                    <td colspan=\"4\">No {{ctrl.userType}}</td>\n" +
     "                </tr>\n" +
     "                <tr ng-if=\"ctrl.users == null\">\n" +
-    "                    <td colspan=\"5\">Loading {{ctrl.userType}}</td>\n" +
+    "                    <td colspan=\"4\">Loading {{ctrl.userType}}</td>\n" +
     "                </tr>\n" +
     "\n" +
     "            </tbody>\n" +
@@ -81,6 +75,51 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "    </div>\n" +
     "\n" +
     "</div>\n" +
+    "");
+}]);
+
+angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("views/sccoreeducation/user-list.html",
+    "<h1>{{ctrl.userType}}</h1>\n" +
+    "\n" +
+    "\n" +
+    "<table class=\"table table-striped\">\n" +
+    "    <thead>\n" +
+    "        <tr>\n" +
+    "            <th>Photo</th>\n" +
+    "            <th>First name</th>\n" +
+    "            <th>Last name</th>\n" +
+    "            <th>Is registered</th>\n" +
+    "            <th>Is student</th>\n" +
+    "            <th>Is Staff</th>\n" +
+    "        </tr>\n" +
+    "    </thead>\n" +
+    "    <tbody>\n" +
+    "        <tr ng-repeat=\"user in ctrl.users track by user.id\">\n" +
+    "            <td>\n" +
+    "                <img ng-src=\"{{user.image.url}}\" />\n" +
+    "            </td>\n" +
+    "            <td>{{user.name.givenName}}</td>\n" +
+    "            <td>{{user.name.familyName}}</td>\n" +
+    "            <td>\n" +
+    "                <input type=\"checkbox\" ng-checked=\"user.id\" disabled=\"disabled\">\n" +
+    "            </td>\n" +
+    "            <td>\n" +
+    "                <input type=\"checkbox\" ng-checked=\"user.isStudent\" disabled=\"disabled\">\n" +
+    "            </td>\n" +
+    "            <td>\n" +
+    "                <input type=\"checkbox\" ng-checked=\"user.isStaff\" ng-disabled=\"user.isStaff || !user.id\" ng-click=\"ctrl.makeStaff(user)\">\n" +
+    "            </td>\n" +
+    "        </tr>\n" +
+    "        <tr ng-if=\"ctrl.users.length == 0\">\n" +
+    "            <td colspan=\"6\">No {{ctrl.userType}}</td>\n" +
+    "        </tr>\n" +
+    "        <tr ng-if=\"ctrl.users == null\">\n" +
+    "            <td colspan=\"6\">Loading {{ctrl.userType}}</td>\n" +
+    "        </tr>\n" +
+    "\n" +
+    "    </tbody>\n" +
+    "</table>\n" +
     "");
 }]);
 
