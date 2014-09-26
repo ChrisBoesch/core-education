@@ -6,6 +6,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Year</th>
                     <th>Is registered</th>
                     <th>Is student</th>
                     <th>Is Staff</th>
@@ -14,6 +15,7 @@
             <tbody>
                 <tr ng-repeat="user in ctrl.users track by user.studentId">
                     <td>{{user.displayName}}</td>
+                    <td>{{user.year}}</td>
                     <td>
                         <input type="checkbox" ng-checked="user.id" disabled="disabled">
                     </td>
@@ -30,10 +32,19 @@
                 <tr ng-if="ctrl.users == null">
                     <td colspan="4">Loading {{ctrl.userType}}</td>
                 </tr>
-
             </tbody>
+
+            <tfoot ng-show="ctrl.users.cursor">
+                <tr>
+                    <td colspan="6" class="more-btn">
+                        <button class="btn btn-primary" ng-click="ctrl.getMore()" ng-disabled="ctrl.loading">More</button>
+                    </td>
+                </tr>
+            </tfoot>
+
         </table>
     </div>
+
     <div class="col-md-4" ng-if="ctrl.currentUser.isAdmin">
         <div>
             <form role="form" id="upload-form">

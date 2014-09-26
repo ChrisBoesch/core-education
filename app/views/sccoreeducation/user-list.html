@@ -37,4 +37,11 @@
         </tr>
 
     </tbody>
+    <tfoot ng-show="ctrl.users.cursor">
+        <tr>
+            <td colspan="6" class="more-btn">
+                <button class="btn btn-primary" ng-click="ctrl.getMore()" ng-disabled="ctrl.loading">More</button>
+            </td>
+        </tr>
+    </tfoot>
 </table>

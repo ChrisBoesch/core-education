@@ -35,7 +35,7 @@
         }
 
         this.loading = $q.when(this.loading).then(function() {
-          return getList(this.users.cursor);
+          return getList(self.users.cursor);
         }).then(function(users) {
           self.users = self.users.concat(users);
           self.users.cursor = users.cursor;

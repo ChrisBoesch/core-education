@@ -15,6 +15,7 @@ angular.module("views/sccoreeducation/student-list.html", []).run(["$templateCac
     "            <thead>\n" +
     "                <tr>\n" +
     "                    <th>Name</th>\n" +
+    "                    <th>Year</th>\n" +
     "                    <th>Is registered</th>\n" +
     "                    <th>Is student</th>\n" +
     "                    <th>Is Staff</th>\n" +
@@ -23,6 +24,7 @@ angular.module("views/sccoreeducation/student-list.html", []).run(["$templateCac
     "            <tbody>\n" +
     "                <tr ng-repeat=\"user in ctrl.users track by user.studentId\">\n" +
     "                    <td>{{user.displayName}}</td>\n" +
+    "                    <td>{{user.year}}</td>\n" +
     "                    <td>\n" +
     "                        <input type=\"checkbox\" ng-checked=\"user.id\" disabled=\"disabled\">\n" +
     "                    </td>\n" +
@@ -39,10 +41,19 @@ angular.module("views/sccoreeducation/student-list.html", []).run(["$templateCac
     "                <tr ng-if=\"ctrl.users == null\">\n" +
     "                    <td colspan=\"4\">Loading {{ctrl.userType}}</td>\n" +
     "                </tr>\n" +
-    "\n" +
     "            </tbody>\n" +
+    "\n" +
+    "            <tfoot ng-show=\"ctrl.users.cursor\">\n" +
+    "                <tr>\n" +
+    "                    <td colspan=\"6\" class=\"more-btn\">\n" +
+    "                        <button class=\"btn btn-primary\" ng-click=\"ctrl.getMore()\" ng-disabled=\"ctrl.loading\">More</button>\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "            </tfoot>\n" +
+    "\n" +
     "        </table>\n" +
     "    </div>\n" +
+    "\n" +
     "    <div class=\"col-md-4\" ng-if=\"ctrl.currentUser.isAdmin\">\n" +
     "        <div>\n" +
     "            <form role=\"form\" id=\"upload-form\">\n" +
@@ -119,6 +130,13 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "        </tr>\n" +
     "\n" +
     "    </tbody>\n" +
+    "    <tfoot ng-show=\"ctrl.users.cursor\">\n" +
+    "        <tr>\n" +
+    "            <td colspan=\"6\" class=\"more-btn\">\n" +
+    "                <button class=\"btn btn-primary\" ng-click=\"ctrl.getMore()\" ng-disabled=\"ctrl.loading\">More</button>\n" +
+    "            </td>\n" +
+    "        </tr>\n" +
+    "    </tfoot>\n" +
     "</table>\n" +
     "");
 }]);
