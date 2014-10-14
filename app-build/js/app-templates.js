@@ -167,6 +167,7 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            <th>Photo</th>\n" +
     "            <th>First name</th>\n" +
     "            <th>Last name</th>\n" +
+    "            <th>domain</th>\n" +
     "            <th>Is student</th>\n" +
     "            <th>Is Staff</th>\n" +
     "            <th>Is Admin</th>\n" +
@@ -180,6 +181,7 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            </td>\n" +
     "            <td>{{user.name.givenName}}</td>\n" +
     "            <td>{{user.name.familyName}}</td>\n" +
+    "            <td>{{user.domain}}</td>\n" +
     "            <td>\n" +
     "                <input type=\"checkbox\" ng-checked=\"user.isStudent\" disabled=\"disabled\">\n" +
     "            </td>\n" +
@@ -208,16 +210,16 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            </td>\n" +
     "        </tr>\n" +
     "        <tr ng-if=\"ctrl.users.length == 0\">\n" +
-    "            <td colspan=\"7\">No {{ctrl.userType}}</td>\n" +
+    "            <td colspan=\"8\">No {{ctrl.userType}}</td>\n" +
     "        </tr>\n" +
     "        <tr ng-if=\"ctrl.users == null\">\n" +
-    "            <td colspan=\"7\">Loading {{ctrl.userType}}</td>\n" +
+    "            <td colspan=\"8\">Loading {{ctrl.userType}}</td>\n" +
     "        </tr>\n" +
     "\n" +
     "    </tbody>\n" +
     "    <tfoot ng-show=\"ctrl.users.cursor\">\n" +
     "        <tr>\n" +
-    "            <td colspan=\"6\" class=\"more-btn\">\n" +
+    "            <td colspan=\"8\" class=\"more-btn\">\n" +
     "                <button class=\"btn btn-primary\" ng-click=\"ctrl.getMore()\" ng-disabled=\"ctrl.loading\">More</button>\n" +
     "            </td>\n" +
     "        </tr>\n" +

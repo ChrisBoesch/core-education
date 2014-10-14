@@ -100,6 +100,7 @@
             'isDefault': true
           },
           'verified': false,
+          'isGuest': true,
           'isStudent': false,
           'isStaff': false,
           'isAdmin': false,
