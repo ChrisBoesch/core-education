@@ -169,11 +169,12 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            <th>Last name</th>\n" +
     "            <th>Is student</th>\n" +
     "            <th>Is Staff</th>\n" +
+    "            <th>Is Admin</th>\n" +
     "            <th>Action</th>\n" +
     "        </tr>\n" +
     "    </thead>\n" +
     "    <tbody>\n" +
-    "        <tr ng-repeat=\"user in ctrl.users track by user.id\">\n" +
+    "        <tr ng-repeat=\"user in ctrl.users track by user.id\" ng-if=\"!user.isGuest\">\n" +
     "            <td>\n" +
     "                <img ng-src=\"{{user.image.url}}\" />\n" +
     "            </td>\n" +
@@ -185,6 +186,11 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            <td>\n" +
     "                <ng-form name=\"switchStaffForm\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"user.isStaff\" name=\"isStaff\" ng-disabled=\"switchStaffForm.isStaff.disabled || ctrl.currentUser.id == user.id\" ng-click=\"ctrl.switchStaff(user, switchStaffForm.isStaff)\">\n" +
+    "                </ng-form>\n" +
+    "            </td>\n" +
+    "            <td>\n" +
+    "                <ng-form name=\"switchAdminForm\">\n" +
+    "                    <input type=\"checkbox\" ng-model=\"user.isAdmin\" name=\"isAdmin\" ng-disabled=\"switchAdminForm.isAdmin.disabled || user.isDomainAdmin || ctrl.currentUser.id == user.id\" ng-click=\"ctrl.switchAdmin(user, switchAdminForm.isAdmin)\">\n" +
     "                </ng-form>\n" +
     "            </td>\n" +
     "            <td>\n" +
@@ -202,10 +208,10 @@ angular.module("views/sccoreeducation/user-list.html", []).run(["$templateCache"
     "            </td>\n" +
     "        </tr>\n" +
     "        <tr ng-if=\"ctrl.users.length == 0\">\n" +
-    "            <td colspan=\"6\">No {{ctrl.userType}}</td>\n" +
+    "            <td colspan=\"7\">No {{ctrl.userType}}</td>\n" +
     "        </tr>\n" +
     "        <tr ng-if=\"ctrl.users == null\">\n" +
-    "            <td colspan=\"6\">Loading {{ctrl.userType}}</td>\n" +
+    "            <td colspan=\"7\">Loading {{ctrl.userType}}</td>\n" +
     "        </tr>\n" +
     "\n" +
     "    </tbody>\n" +

@@ -9,11 +9,12 @@
             <th>Last name</th>
             <th>Is student</th>
             <th>Is Staff</th>
+            <th>Is Admin</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="user in ctrl.users track by user.id">
+        <tr ng-repeat="user in ctrl.users track by user.id" ng-if="!user.isGuest">
             <td>
                 <img ng-src="{{user.image.url}}" />
             </td>
@@ -25,6 +26,11 @@
             <td>
                 <ng-form name="switchStaffForm">
                     <input type="checkbox" ng-model="user.isStaff" name="isStaff" ng-disabled="switchStaffForm.isStaff.disabled || ctrl.currentUser.id == user.id" ng-click="ctrl.switchStaff(user, switchStaffForm.isStaff)">
+                </ng-form>
+            </td>
+            <td>
+                <ng-form name="switchAdminForm">
+                    <input type="checkbox" ng-model="user.isAdmin" name="isAdmin" ng-disabled="switchAdminForm.isAdmin.disabled || user.isDomainAdmin || ctrl.currentUser.id == user.id" ng-click="ctrl.switchAdmin(user, switchAdminForm.isAdmin)">
                 </ng-form>
             </td>
             <td>
@@ -42,10 +48,10 @@
             </td>
         </tr>
         <tr ng-if="ctrl.users.length == 0">
-            <td colspan="6">No {{ctrl.userType}}</td>
+            <td colspan="7">No {{ctrl.userType}}</td>
         </tr>
         <tr ng-if="ctrl.users == null">
-            <td colspan="6">Loading {{ctrl.userType}}</td>
+            <td colspan="7">Loading {{ctrl.userType}}</td>
         </tr>
 
     </tbody>
